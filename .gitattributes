@@ -1,0 +1,14 @@
+# Mantiene los saltos de línea LF en los archivos de texto, también en Windows.
+# Así los archivos planos de data/ conservan exactamente su formato original.
+* text=auto
+*.txt text eol=lf
+*.py  text eol=lf
+*.md  text eol=lf
+*.csv text eol=lf
+*.svg text eol=lf
+
+# Archivos binarios: Git no debe modificarlos
+*.png  binary
+*.pbix binary
+*.docx binary
+*.xlsx binary

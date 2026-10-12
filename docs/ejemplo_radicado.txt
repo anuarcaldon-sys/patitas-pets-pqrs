@@ -1,0 +1,32 @@
++----------------------------------------------------------------------------------------------------------------------+
+|                                          UNIVERSIDAD DE ANTIOQUIA - MEPEGA                                           |
+|                                     Movimiento Estudiantil de Perritos y Gaticos                                     |
+|                                      PATITAS-PETS - Sistema de Gestión de PQRS                                       |
+|                                                                                                                      |
+|                                          COMPROBANTE DE RADICACIÓN DE PQRS                                           |
++----------------------------------------------------------------------------------------------------------------------+
+|------------------------------------------------- DATOS DEL RADICADO -------------------------------------------------|
+| Número de radicado ...........: PET-003001                                                                           |
+| ID de registro ...............: 3001                                                                                 |
+| Fecha y hora de radicación ...: 2026-09-30 21:18:42                                                                  |
+| Estado .......................: Registrada                                                                           |
+| Fecha máxima de respuesta ....: 2026-10-15 21:18:42                                                                  |
+|----------------------------------------------- DATOS DEL SOLICITANTE ------------------------------------------------|
+| Nombre completo ..............: Laura Gómez Ruiz                                                                     |
+| Documento ....................: CC 1037654321                                                                        |
+| Teléfono de contacto .........: 3001234567 (Celular)                                                                 |
+| Correo electrónico ...........: laura@correo.com                                                                     |
+| Dirección ....................: N/A                                                                                  |
+|--------------------------------------------------- CLASIFICACIÓN ----------------------------------------------------|
+| Tipo de solicitud ............: Petición                                                                             |
+| Canal de recepción ...........: Página web                                                                           |
+| Tipo de mascota ..............: Gato                                                                                 |
+| Campus .......................: Campus Medellín - Ciudad Universitaria                                               |
+|------------------------------------------------------ RESUMEN -------------------------------------------------------|
+| Asunto .......................: Solicitud de vacunación para gato                                                    |
++----------------------------------------------------------------------------------------------------------------------+
+| Registrado por ...............: Administrador Principal MEPEGA (admin_udea)                                          |
+| Comprobante generado .........: 2026-09-30 21:18:42                                                                  |
+|                                                                                                                      |
+|                       Conserve este número de radicado para hacer seguimiento a su solicitud.                        |
++----------------------------------------------------------------------------------------------------------------------+

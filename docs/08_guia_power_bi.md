@@ -1,86 +1,86 @@
 # Guía de Power BI — Tablero de PATITAS-PETS
 
-**Responsable:** Sandra Yulieth Salcedo Salazar (gestión de datos y Power BI) · **Herramienta:** Power BI Desktop (gratuito)
+**Responsable:** Sandra Yulieth Salcedo Salazar (gestión de datos y Power BI) · **Herramienta:** Power BI Desktop (gratuito, Windows)
 
-El tablero se construye con la base que exporta PATITAS-PETS, de modo que las cifras de Power BI coinciden con las del reporte de la opción 4 del programa.
+El tablero se arma en Power BI Desktop en unos 45 minutos con el kit de la carpeta [`docs/powerbi/`](powerbi). La consulta de datos, las medidas, el tema de colores y el diseño de cada página ya están definidos. Solo falta crear los visuales y comprobar las cifras.
 
 ---
 
-## 1. Obtener la base consolidada
+## Kit de construcción
 
-1. Ejecute `python src/main.py`, ingrese y elija **4. Estadísticas → 3. Exportar base consolidada para Power BI (CSV)**.
-2. El archivo queda en `data/exportaciones/base_consolidada_pqrs.csv`: una fila por PQRS de los cuatro archivos y 19 columnas.
-
-| Columna | Descripción |
+| Archivo | Para qué sirve |
 |---|---|
-| `radicado`, `tipo_solicitud`, `id` | Identificación de la PQRS (por ejemplo, `PET-003001`, Petición, 3001) |
-| `tipo_documento`, `canal_recepcion`, `asunto_titulo`, `tipo_mascota`, `campus_relacionado` | Clasificación de la solicitud |
-| `fecha_radicacion`, `fecha_maxima_respuesta` | Fechas de la PQRS |
-| `estado_peticion` | Registrada, En proceso o Solucionada |
-| `usuario_registro`, `nombre_registrador`, `rol_registrador` | Quién registró la PQRS |
-| `fecha_solucion`, `dias_respuesta` | Fecha en que pasó a Solucionada (según `Historial.txt`) y días que tomó; vacías si no se conoce |
-| `antiguedad_dias` | Días transcurridos desde la radicación hasta la exportación |
-| `dias_para_vencer` | Días que faltan para la fecha máxima (solo PQRS activas; negativo = vencida) |
-| `estado_plazo` | Solucionada, Vencida, Próxima a vencer o Al día |
+| [`tema_patitas_pets.json`](powerbi/tema_patitas_pets.json) | Colores del tablero, tomados del logo y validados para daltonismo |
+| [`consulta_power_query.pq`](powerbi/consulta_power_query.pq) | Carga la base desde GitHub con los tipos de dato correctos |
+| [`medidas_dax.dax`](powerbi/medidas_dax.dax) | Todas las medidas y la columna "Rango de retraso" |
+| [`valores_control.md`](powerbi/valores_control.md) | Cifras esperadas para comprobar cada medida |
+| [`../images/powerbi_diseno_paginas.png`](../images/powerbi_diseno_paginas.png) | Diseño de las 4 páginas: qué visual va en cada lugar y con qué campos |
 
-Por protección de datos personales (Ley 1581 de 2012) la base no incluye nombres, documentos, teléfonos, correos, direcciones ni descripciones.
+La fuente de datos es [`data/exportaciones/base_consolidada_pqrs.csv`](../data/exportaciones/base_consolidada_pqrs.csv). PATITAS-PETS la genera en **4. Estadísticas → 3. Exportar base consolidada para Power BI**. Tiene una fila por PQRS (12.000) y 20 columnas, sin datos personales del solicitante (Ley 1581 de 2012).
 
-## 2. Cargar y preparar los datos
+## Paso 1. Aplicar el tema
 
-1. En Power BI Desktop: **Inicio → Obtener datos → Texto/CSV** y elija el archivo. Verifique que el origen sea **65001: Unicode (UTF-8)** y el delimitador **Coma**. Clic en **Transformar datos**.
-2. En Power Query, cambie el nombre de la consulta a `PQRS` y asigne los tipos de columna:
-   - `fecha_radicacion`, `fecha_maxima_respuesta`, `fecha_solucion` → **Fecha y hora**.
-   - `id`, `dias_respuesta`, `antiguedad_dias`, `dias_para_vencer` → **Número entero**.
-   - Si las fechas quedan con error por la configuración regional, use **Cambiar tipo → Usar configuración regional → Inglés (Estados Unidos)**.
-3. Clic en **Cerrar y aplicar**.
-4. *(Opcional)* Cargue también `data/Historial.txt` (delimitador `|`) para analizar los cambios de estado.
+1. Abra Power BI Desktop y cree un informe en blanco.
+2. **Vista → Temas → Examinar temas** y elija `docs/powerbi/tema_patitas_pets.json`.
 
-## 3. Medidas DAX
+## Paso 2. Cargar los datos
 
-Cree cada medida con **Modelado → Nueva medida**:
+1. **Inicio → Obtener datos → Consulta en blanco**.
+2. En el Editor de Power Query: **Inicio → Editor avanzado**, borre todo, pegue el contenido de `consulta_power_query.pq` y haga clic en **Listo**.
+3. Si Power BI pide credenciales, elija **Anónimo → Conectar**.
+4. En el panel derecho, cambie el nombre de la consulta a **PQRS** y haga clic en **Inicio → Cerrar y aplicar**.
 
-```DAX
-Total PQRS = COUNTROWS ( PQRS )
+La consulta lee el archivo publicado en el repositorio, así que no hay que cambiar rutas. Para trabajar sin internet, el mismo archivo explica cómo apuntar a la copia local.
 
-Promedio días de respuesta = ROUND ( AVERAGE ( PQRS[dias_respuesta] ), 0 )
+## Paso 3. Crear las medidas
 
-PQRS con fecha de solución = COUNT ( PQRS[dias_respuesta] )
+En la vista de datos, haga clic derecho sobre la tabla **PQRS → Nueva medida** y pegue cada medida de `medidas_dax.dax` una por una. **Rango de retraso** se crea con **Nueva columna**, no con Nueva medida. A las medidas con "%" o "Tasa" en el nombre deles formato **Porcentaje, 1 decimal** (pestaña **Herramientas de medidas**).
 
-% del total = DIVIDE ( [Total PQRS], CALCULATE ( [Total PQRS], ALLSELECTED ( PQRS ) ) )
+## Paso 4. Construir las páginas
 
-Solucionadas = CALCULATE ( [Total PQRS], PQRS[estado_peticion] = "Solucionada" )
+![Diseño de las páginas del tablero](../images/powerbi_diseno_paginas.png)
 
-Tasa de resolución = DIVIDE ( [Solucionadas], [Total PQRS] )
+Copie la fila de segmentadores de la página 1 y péguela en las demás (al pegar, elija **Sincronizar**). En todos los gráficos active **Etiquetas de datos**: dos colores del tema tienen poco contraste sobre blanco y la etiqueta es la que permite leer el valor.
 
-PQRS activas = CALCULATE ( [Total PQRS], PQRS[estado_peticion] IN { "Registrada", "En proceso" } )
+| Página | Visual | Configuración | Estadística |
+|---|---|---|---|
+| 1. Resumen y tiempos | 4 tarjetas | *Promedio días de respuesta (texto)*, *PQRS con fecha de solución*, *Total PQRS*, *Plazo promedio otorgado (días)* | **Obligatoria** (primera tarjeta) |
+| | Gráfico de líneas | Eje X: `fecha_radicacion` (Año › Mes) · Eje Y: *Total PQRS* | Complementaria |
+| | Gráfico de columnas | Eje X: `tipo_solicitud` · Eje Y: *Total PQRS* | Complementaria |
+| 2. Demanda del servicio | Gráfico de barras | Eje Y: `tipo_mascota` · Eje X: *Total PQRS* · Información sobre herramientas: *% del total* | 1 |
+| | Gráfico de columnas | Eje X: `canal_recepcion` · Eje Y: *% del total* · orden descendente | 2 |
+| | Gráfico de barras | Eje Y: `campus_relacionado` · Eje X: *Total PQRS* · orden descendente | 3 |
+| 3. Gestión y plazos | 5 tarjetas | *Tasa de resolución*, *PQRS activas*, *Vencidas*, *% vencidas sobre activas*, *Retraso promedio vencidas (días)* | 4 y 5 |
+| | Columnas 100 % apiladas | Eje X: `tipo_solicitud` · Leyenda: `estado_peticion` · Valores: *Total PQRS* | 4 |
+| | Gráfico de columnas | Eje X: *Rango de retraso* · Eje Y: *Total PQRS* · color de barras `#D03B3B` (estado crítico) | 5 |
+| | Tabla | `radicado`, `fecha_maxima_respuesta`, `dias_para_vencer` · filtro `estado_plazo` = Vencida · orden por `dias_para_vencer` ascendente | 5 |
+| 4. Solicitantes y operación | 3 tarjetas | *% Comunidad UdeA*, *PQRS por registrador (promedio)*, *Registradores activos* | 6 |
+| | Gráfico de barras | Eje Y: `perfil_solicitante` · Eje X: *Total PQRS* | 6 |
+| | Gráfico de columnas | Eje X: `rol_registrador` · Eje Y: *Total PQRS* | 6 |
+| | Gráfico de barras | Eje Y: `nombre_registrador` · Eje X: *Total PQRS* · orden descendente | 6 |
 
-Vencidas = CALCULATE ( [Total PQRS], PQRS[estado_plazo] = "Vencida" )
+**Colores.** Los gráficos de una sola serie usan el primer color del tema (azul). En la columna apilada de la página 3 el orden de la leyenda debe ser Registrada, En proceso, Solucionada. Los colores de estado (verde, ámbar, rojo) quedan reservados para los plazos y no se usan para otras series.
 
-Próximas a vencer = CALCULATE ( [Total PQRS], PQRS[estado_plazo] = "Próxima a vencer" )
+## Paso 5. Comprobar las cifras
 
-% vencidas sobre activas = DIVIDE ( [Vencidas], [PQRS activas] )
+Sin filtros aplicados, cada tarjeta y cada gráfico debe coincidir con [`valores_control.md`](powerbi/valores_control.md). Por ejemplo: *Total PQRS* = 12.000, *Tasa de resolución* = 33,3 %, *PQRS activas* = 8.009. Si una cifra no coincide, revise el tipo de dato de esa columna en Power Query (Paso 2).
 
-Antigüedad promedio activas =
-    CALCULATE ( AVERAGE ( PQRS[antiguedad_dias] ), PQRS[estado_peticion] IN { "Registrada", "En proceso" } )
-```
+## Paso 6. Guardar y entregar
 
-Dé formato de porcentaje a `% del total`, `Tasa de resolución` y `% vencidas sobre activas`.
+Guarde el informe como `docs/powerbi/PATITAS-PETS_dashboard.pbix` y expórtelo también en PDF (**Archivo → Exportar → Exportar a PDF**) en la misma carpeta, para que el docente lo vea sin instalar Power BI. Súbalos al repositorio desde su propia cuenta de GitHub.
 
-> `Promedio días de respuesta` usa la misma definición que `reportes.py`: días entre la radicación y la solución registrada en PATITAS-PETS, redondeados al entero. Las PQRS históricas solucionadas no tienen fecha de solución y quedan por fuera; muéstrelo en el tablero junto a la medida `PQRS con fecha de solución`.
+---
 
-## 4. Diseño del tablero (3 páginas)
+## Notas para la sustentación
 
-| Página | Visualizaciones | Estadística del enunciado |
-|---|---|---|
-| **1. Resumen y tiempos** | Tarjetas: *Promedio días de respuesta* (primera visualización), *PQRS con fecha de solución*, *Total PQRS*, *Tasa de resolución*, *PQRS activas*. Gráfico de columnas por `tipo_solicitud`. Gráfico de líneas de *Total PQRS* por mes de `fecha_radicacion`. | Obligatoria: promedio de días de respuesta |
-| **2. Demanda del servicio** | Gráfico de anillo por `tipo_mascota`. Barras de *% del total* por `canal_recepcion`. Barras horizontales por `campus_relacionado`. | 1. Mascota · 2. Canal · 3. Campus |
-| **3. Gestión y plazos** | Columnas apiladas de `estado_peticion` por `tipo_solicitud`. Anillo de `estado_plazo` filtrado a PQRS activas. Tarjetas de *Vencidas*, *Próximas a vencer* y *% vencidas sobre activas*. Tabla de las próximas a vencer (`radicado`, `fecha_maxima_respuesta`, `dias_para_vencer`). Barras de *Total PQRS* por `nombre_registrador`. | 4. Estado · 5. Vencimiento · 6. Carga operativa |
+**La primera tarjeta dice "Sin datos aún".** El promedio de días de respuesta se calcula con la fecha en que cada PQRS pasa a *Solucionada*, que PATITAS-PETS guarda en `data/Historial.txt`. Las bases de MEPEGA no traen esa fecha, así que las 3.991 PQRS que ya venían solucionadas no tienen fecha de solución y no entran en el promedio. Para que el tablero muestre un valor real:
 
-Agregue en todas las páginas segmentadores por `tipo_solicitud`, `campus_relacionado` y fecha de radicación, y use los colores del logo (verde `#1B7F3B` y naranja `#F59E0B`).
+1. Con la opción **3. Registrar cambio en PQRS**, lleven varias PQRS de *Registrada* a *En proceso* y luego a *Solucionada*.
+2. Exporten de nuevo la base (**4. Estadísticas → 3**) y súbanla a GitHub.
+3. En Power BI, **Inicio → Actualizar**.
 
-> **Perfil del solicitante.** La estadística 6 del enunciado pide clasificar por Estudiante, Docente, Administrativo o Ciudadano, pero ese dato no existe en las bases de MEPEGA. El tablero muestra la parte operativa (carga por registrador) y el perfil queda como pregunta abierta para el Product Owner.
+Si el docente entrega las fechas de solución de la base histórica, se cargan en `Historial.txt` y el promedio las incluye sin cambiar el código.
 
-## 5. Guardar y actualizar
+**El 100 % de las PQRS activas está vencido.** La PQRS más reciente de la base se radicó el 28 de septiembre de 2026 y su plazo de 30 días terminó el 28 de octubre. Por eso no hay PQRS "al día" ni "próximas a vencer", y la página 3 muestra cuánto retraso acumula cada una: el promedio es de 145 días.
 
-- Guarde el archivo como `docs/powerbi/PATITAS-PETS_dashboard.pbix` y exporte una copia en PDF (**Archivo → Exportar → Exportar a PDF**) en la misma carpeta, para que el docente pueda verlo sin Power BI.
-- Cada vez que exporte una base nueva desde PATITAS-PETS, use **Inicio → Actualizar** en Power BI.
+**El perfil del solicitante es derivado.** El enunciado pide clasificar por Estudiante, Docente, Administrativo o Ciudadano, pero las bases no tienen ese campo. PATITAS-PETS lo deriva así: documento NIT → *Organización (NIT)*; correo `@udea.edu.co` → *Comunidad UdeA*; cualquier otro → *Ciudadano externo*. Separar estudiantes, docentes y administrativos requiere un campo nuevo, y esa decisión le corresponde al Product Owner.

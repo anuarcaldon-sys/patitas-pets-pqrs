@@ -189,7 +189,8 @@ El programa actualiza la PQRS, registra el cambio en `data/Historial.txt` y gene
 | 3 | Distribución por campus | Dónde se concentra la demanda |
 | 4 | Efectividad por estado | Porcentaje de PQRS Registradas, En proceso y Solucionadas, y tasa de resolución |
 | 5 | Alerta de vencimiento | De las PQRS activas: cuántas están vencidas, próximas a vencer y al día |
-| — | Complementarias | Cantidad por tipo de PQRS y carga operativa por usuario registrador |
+| 6 | Perfil del solicitante y carga operativa | Perfil derivado (Comunidad UdeA, Ciudadano externo u Organización), y PQRS registradas por rol y por usuario |
+| — | Complementarias | Cantidad por tipo de PQRS y por tipo de documento del solicitante |
 
 La base para Power BI **no incluye** nombres, documentos, teléfonos, correos, direcciones ni descripciones, para proteger los datos personales de los solicitantes. La construcción del tablero se explica en la [guía de Power BI](08_guia_power_bi.md).
 

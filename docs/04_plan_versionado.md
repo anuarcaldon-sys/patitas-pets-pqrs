@@ -74,8 +74,8 @@ El **avance acumulado** es el porcentaje de los 141 días-actividad del cronogra
 - `radicado.py`: comprobante de 120 caracteres con marco ASCII.
 - `consultas.py`: consulta por radicado, por documento, estado general, activas, más antiguas, próximas a vencer y vencidas.
 - `cambios.py`: flujo Registrada → En proceso → Solucionada, con historial en `data/Historial.txt`.
-- `reportes.py`: promedio de días de respuesta, cinco estadísticas adicionales y exportación TXT y CSV para Power BI.
-- Tablero de Power BI, plan de versionado, documentación del algoritmo y manual de usuario.
+- `reportes.py`: promedio de días de respuesta, las seis estadísticas adicionales del enunciado (incluido el perfil del solicitante derivado y la carga operativa) y exportación TXT y CSV para Power BI.
+- Kit del tablero de Power BI (tema, consulta, medidas DAX, diseño de 4 páginas y valores de control), plan de versionado, documentación del algoritmo y manual de usuario.
 
 ### v2.0.1 — Sustentación (día 70, 18 de noviembre)
 

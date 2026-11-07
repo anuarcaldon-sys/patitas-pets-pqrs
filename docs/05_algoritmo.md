@@ -12,17 +12,17 @@ Todo el código del proyecto está en la carpeta [`src/`](../src). Este document
 | Módulo | Líneas | Responsabilidad | Funciones principales |
 |---|---:|---|---|
 | `main.py` | 107 | Punto de entrada, menú principal y menú de estadísticas | `main`, `menu_principal`, `menu_estadisticas` |
-| `config.py` | 166 | Rutas, catálogos, estructura de datos y reglas de negocio | *(solo constantes)* |
+| `config.py` | 174 | Rutas, catálogos, estructura de datos y reglas de negocio | *(solo constantes)* |
 | `interfaz.py` | 131 | Banner, encabezados, lectura de opciones, tablas paginadas y lectura de la clave | `mostrar_encabezado`, `pedir_opcion`, `mostrar_tabla`, `leer_clave` |
 | `autenticacion.py` | 120 | Usuarios autorizados, credenciales, intentos, bloqueo y sesión | `iniciar_sesion`, `validar_credenciales`, `bloquear_pantalla` |
 | `validaciones.py` | 243 | Reglas de cada campo (nombre, documento, teléfono, correo, fechas, estado…) | `validar_nombre`, `validar_correo`, `validar_fecha_radicacion`, `validar_cambio_estado` |
 | `registro.py` | 181 | Opción 1: captura guiada y guardado de una PQRS | `registrar_pqrs`, `capturar_datos`, `pedir_texto`, `elegir` |
 | `consultas.py` | 182 | Opción 2: consultas y listados | `menu_consultas`, `buscar_por_radicado`, `ver_listado` |
 | `cambios.py` | 90 | Opción 3: cambio de estado | `registrar_cambio` |
-| `reportes.py` | 293 | Opción 4: estadísticas y archivos para Power BI | `calcular_estadisticas`, `texto_reporte`, `base_consolidada` |
+| `reportes.py` | 325 | Opción 4: estadísticas y archivos para Power BI | `calcular_estadisticas`, `texto_reporte`, `base_consolidada` |
 | `archivos.py` | 225 | Lectura y escritura de todos los archivos planos | `leer_registros`, `siguiente_id`, `guardar_registro`, `actualizar_registro` |
 | `radicado.py` | 141 | Comprobante de 120 columnas | `construir_radicado`, `numero_radicado` |
-| **Total** | **1.879** | | |
+| **Total** | **1.919** | | |
 
 El programa usa únicamente la biblioteca estándar de Python: `pathlib`, `datetime`, `re`, `csv`, `collections`, `textwrap`, `unicodedata`, `getpass`, `time` y `os`.
 
@@ -184,6 +184,18 @@ promedio_de_dias_de_respuesta:
 
 Las bases de MEPEGA no tienen fecha de solución, por eso las PQRS que ya venían solucionadas no entran en el promedio; el reporte informa cuántas quedan por fuera y muestra como referencia el plazo promedio otorgado y la antigüedad promedio de las PQRS activas.
 
+### 4.7 Perfil del solicitante (`reportes.perfil_solicitante`)
+
+Las bases no tienen un campo de perfil, así que la estadística 6 lo deriva de dos datos que sí existen:
+
+```
+SI tipo_documento = "NIT"                         -> "Organización (NIT)"
+SI el dominio del correo es "udea.edu.co"          -> "Comunidad UdeA"
+SI NO                                             -> "Ciudadano externo"
+```
+
+El orden importa: una organización con correo institucional se cuenta como organización. La regla está en una sola función y el dominio en `config.DOMINIO_INSTITUCIONAL`, de modo que si el PO aprueba un campo de perfil, solo cambia esa función.
+
 ## 5. Archivos que usa el programa
 
 | Archivo | Lectura | Escritura | Módulo |
@@ -210,7 +222,8 @@ Las bases de MEPEGA no tienen fecha de solución, por eso las PQRS que ya venía
 | 9 | Intentar cambiar una PQRS solucionada | Mensaje "no admite más cambios" | ✅ |
 | 10 | Archivo de datos sin salto de línea final | El nuevo registro queda en su propia línea | ✅ |
 | 11 | Archivo de datos inexistente | Se crea con encabezado y el consecutivo inicia en 1 | ✅ |
-| 12 | Estadísticas y base para Power BI con 12.001 registros | Cálculo en menos de 1 segundo; CSV de 12.001 filas y 19 columnas | ✅ |
+| 12 | Estadísticas y base para Power BI con 12.001 registros | Cálculo en menos de 1 segundo; CSV de 12.001 filas y 20 columnas | ✅ |
+| 13 | Valores del reporte frente a un cálculo independiente con pandas sobre el CSV exportado | Todas las cifras coinciden (`docs/powerbi/valores_control.md`) | ✅ |
 
 ## 7. Preguntas de repaso para la sustentación
 
@@ -228,3 +241,4 @@ Cada integrante debe poder responder cualquiera de estas preguntas y señalar la
 10. ¿Qué hace `dict(zip(encabezado, valores))`? *(archivos.py, `leer_archivo_plano`)*
 11. ¿Por qué el programa funciona aunque se ejecute desde otra carpeta? *(config.py, `RAIZ_PROYECTO`)*
 12. ¿Por qué la base para Power BI no incluye nombres, teléfonos ni correos? *(reportes.py, `base_consolidada`)*
+13. ¿Cómo se obtiene el perfil del solicitante si las bases no tienen ese campo? *(reportes.py, `perfil_solicitante`)*

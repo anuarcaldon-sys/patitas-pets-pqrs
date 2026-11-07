@@ -80,7 +80,7 @@ MEPEGA ya cuenta con cuatro bases de datos en archivos planos (3.000 registros p
 | Versión | Entrega | Funcionalidades |
 |---|---|---|
 | **1.0** | Entrega 1 (30-sep-2026) | Login con usuario o correo, 3 intentos y bloqueo de 30 s; sesión activa; registro de PQRS con todas las validaciones; consecutivo por archivo que continúa desde 3001; almacenamiento en los 4 archivos planos; radicado de 120 columnas guardado en `data/radicados/`; consulta de una PQRS por tipo e ID |
-| **2.0** | Entrega 2 (18-nov-2026) | Registro de cambios de estado (Registrada → En proceso → Solucionada); consultas de registros activos, más antiguos y próximos a vencer; `reportes.py` con el promedio de días de respuesta y cinco estadísticas adicionales; exportación de resultados a archivo plano; tablero en Power BI; manual de usuario y plan de versionado |
+| **2.0** | Entrega 2 (18-nov-2026) | Registro de cambios de estado (Registrada → En proceso → Solucionada); consultas de registros activos, más antiguos y próximos a vencer; `reportes.py` con el promedio de días de respuesta y las seis estadísticas adicionales del enunciado; exportación de resultados a archivo plano; tablero en Power BI; manual de usuario y plan de versionado |
 
 **Fuera del alcance:** interfaz web o gráfica, base de datos relacional, envío de notificaciones por correo, atención de la solicitud veterinaria en sí misma y administración de usuarios desde el programa.
 

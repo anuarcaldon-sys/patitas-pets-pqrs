@@ -60,7 +60,7 @@ git init
 git add .
 git commit -m "v2.0.0 - Versión completa de PATITAS-PETS"
 git branch -M main
-git remote add origin https://github.com/USUARIO-LIDER/patitas-pets-pqrs.git
+git remote add origin https://github.com/anuarcaldon-sys/patitas-pets-pqrs.git
 git push -u origin main
 ```
 
@@ -80,7 +80,7 @@ Verifique que todos los integrantes aparezcan en la lista de colaboradores antes
 Cada integrante trabaja en su propia rama y el líder integra los cambios en `main`:
 
 ```bash
-git clone https://github.com/USUARIO-LIDER/patitas-pets-pqrs.git   # una sola vez
+git clone https://github.com/anuarcaldon-sys/patitas-pets-pqrs.git   # una sola vez
 cd patitas-pets-pqrs
 git switch -c nombre/tarea          # crear una rama para la tarea
 # ... editar archivos ...

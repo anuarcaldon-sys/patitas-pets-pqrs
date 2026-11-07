@@ -1,0 +1,13 @@
+{
+  "name": "PATITAS-PETS",
+  "dataColors": ["#2A78D6", "#E39A00", "#C8323A", "#1BAF7A", "#8C5BD6", "#B5651D"],
+  "background": "#FFFFFF",
+  "foreground": "#3B2614",
+  "tableAccent": "#B5651D",
+  "good": "#0CA30C",
+  "neutral": "#FAB219",
+  "bad": "#D03B3B",
+  "maximum": "#1F4E78",
+  "center": "#9DB9D9",
+  "minimum": "#EAF1F8"
+}

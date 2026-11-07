@@ -219,7 +219,7 @@ def exportar_csv(nombre_archivo, columnas, filas):
     config.CARPETA_EXPORTACIONES.mkdir(parents=True, exist_ok=True)
     ruta = config.CARPETA_EXPORTACIONES / nombre_archivo
     with open(ruta, "w", encoding="utf-8-sig", newline="") as archivo:
-        escritor = csv.DictWriter(archivo, fieldnames=columnas)
+        escritor = csv.DictWriter(archivo, fieldnames=columnas, lineterminator="\n")
         escritor.writeheader()
         escritor.writerows(filas)
     return ruta

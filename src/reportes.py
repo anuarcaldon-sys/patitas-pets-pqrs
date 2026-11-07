@@ -7,14 +7,24 @@ exportan (reporte en texto y base consolidada para Power BI).
 Estadística obligatoria:
     0. Promedio de días de respuesta (valor entero).
 
-Las cinco estadísticas adicionales exigidas:
+Estadísticas adicionales exigidas por el enunciado:
     1. Distribución por tipo de mascota.
     2. Proporción por canal de recepción.
     3. Distribución por campus.
     4. Efectividad y resolución por estado.
     5. Alerta de vencimiento y control de plazo.
+    6. Perfil del solicitante y carga operativa (por rol y por usuario registrador).
 
-Complementarias: cantidad por tipo de PQRS y carga operativa por usuario.
+Complementarias: cantidad por tipo de PQRS y por tipo de documento del solicitante.
+
+¿Cómo se obtiene el perfil del solicitante (estadística 6)?
+    Las bases de MEPEGA no tienen un campo de perfil, así que se DERIVA:
+      - documento NIT                        -> Organización (NIT)
+      - correo con dominio @udea.edu.co      -> Comunidad UdeA
+      - cualquier otro caso                  -> Ciudadano externo
+    Con los datos actuales no se puede distinguir entre estudiante, docente y
+    administrativo; esa división queda pendiente de un campo nuevo aprobado por
+    el Product Owner.
 
 ¿Cómo se calcula el promedio de días de respuesta?
     Días de respuesta de una PQRS = fecha en que pasó a Solucionada
@@ -83,6 +93,16 @@ def dias_de_respuesta(registro, soluciones):
     return (fecha_solucion - a_fecha(registro["fecha_radicacion"])).days
 
 
+def perfil_solicitante(registro):
+    """Perfil derivado del solicitante (ver la explicación al inicio del módulo)."""
+    if registro["tipo_documento"] == "NIT":
+        return config.PERFIL_ORGANIZACION
+    dominio = registro["correo_electronico"].rsplit("@", 1)[-1].lower()
+    if dominio == config.DOMINIO_INSTITUCIONAL:
+        return config.PERFIL_COMUNIDAD_UDEA
+    return config.PERFIL_EXTERNO
+
+
 def dias_para_vencer(registro, ahora):
     """Días calendario que faltan para la fecha máxima (negativo si ya venció)."""
     return (a_fecha(registro["fecha_maxima_respuesta"]).date() - ahora.date()).days
@@ -142,6 +162,7 @@ def calcular_estadisticas(registros, ahora=None):
     total = len(registros)
     soluciones = fechas_de_solucion()
     activas = registros_activos(registros)
+    roles = {u["usuario"]: u["rol"] for u in autenticacion.cargar_usuarios()}
 
     # 0. Estadística obligatoria: promedio de días de respuesta
     dias = [d for d in (dias_de_respuesta(r, soluciones) for r in registros) if d is not None]
@@ -160,6 +181,9 @@ def calcular_estadisticas(registros, ahora=None):
         "antiguedad_activas": round(sum(antiguedades) / len(antiguedades)) if antiguedades else 0,
         "por_tipo": conteo(registros,
                            lambda r: config.TIPOS_SOLICITUD[r["tipo_solicitud"]]["nombre"]),
+        "por_tipo_documento": conteo(
+            registros, lambda r: f"{r['tipo_documento']} - {config.TIPOS_DOCUMENTO.get(r['tipo_documento'], 'Otro')}",
+            [f"{codigo} - {nombre}" for codigo, nombre in config.TIPOS_DOCUMENTO.items()]),
         "por_mascota": conteo(registros, lambda r: r["tipo_mascota"], config.TIPOS_MASCOTA),
         "por_canal": conteo(registros, lambda r: r["canal_recepcion"]),
         "por_campus": conteo(registros, lambda r: r["campus_relacionado"]),
@@ -168,6 +192,8 @@ def calcular_estadisticas(registros, ahora=None):
         "por_plazo_activas": conteo(activas, lambda r: clasificar_plazo(r, ahora),
                                     [ETIQUETA_VENCIDA, ETIQUETA_PROXIMA, ETIQUETA_AL_DIA]),
         "total_activas": len(activas),
+        "por_perfil": conteo(registros, perfil_solicitante, config.PERFILES),
+        "por_rol": conteo(registros, lambda r: roles.get(r["usuario_registro"], "Sin rol")),
         "por_usuario": conteo(registros, lambda r: r["usuario_registro"]),
     }
 
@@ -204,7 +230,7 @@ def texto_reporte(e, usuario=""):
     ]
     if e["promedio_respuesta"] is None:
         lineas.append("   Promedio de días de respuesta ..........: sin datos "
-                      "(ninguna PQRS solucionada tiene fecha en Historial.txt)")
+                      "(aún no hay soluciones en Historial.txt)")
     else:
         lineas.append(f"   Promedio de días de respuesta ..........: {e['promedio_respuesta']} días "
                       f"(muestra: {formato_numero(e['muestras_respuesta'])} PQRS con fecha de solución)")
@@ -215,6 +241,8 @@ def texto_reporte(e, usuario=""):
         f"   Referencia: antigüedad promedio activas : {e['antiguedad_activas']} días",
     ]
     lineas += bloque_distribucion("CANTIDAD POR TIPO DE PQRS (complementaria)", e["por_tipo"])
+    lineas += bloque_distribucion("CANTIDAD POR TIPO DE DOCUMENTO DEL SOLICITANTE (complementaria)",
+                                  e["por_tipo_documento"])
     lineas += bloque_distribucion("1. DISTRIBUCIÓN POR TIPO DE MASCOTA", e["por_mascota"])
     lineas += bloque_distribucion("2. PROPORCIÓN POR CANAL DE RECEPCIÓN", e["por_canal"])
     lineas += bloque_distribucion("3. DISTRIBUCIÓN POR CAMPUS", e["por_campus"])
@@ -225,8 +253,10 @@ def texto_reporte(e, usuario=""):
         f"5. ALERTA DE VENCIMIENTO (sobre {formato_numero(e['total_activas'])} PQRS activas; "
         f"próxima a vencer = menos de {config.DIAS_ALERTA_VENCIMIENTO} días)",
         e["por_plazo_activas"])
-    lineas += bloque_distribucion("CARGA OPERATIVA POR USUARIO REGISTRADOR (complementaria)",
-                                  e["por_usuario"])
+    lineas += bloque_distribucion("6a. PERFIL DEL SOLICITANTE (derivado: NIT, correo @udea.edu.co u otro)",
+                                  e["por_perfil"])
+    lineas += bloque_distribucion("6b. CARGA OPERATIVA POR ROL DEL REGISTRADOR", e["por_rol"])
+    lineas += bloque_distribucion("6c. CARGA OPERATIVA POR USUARIO REGISTRADOR", e["por_usuario"])
     lineas += ["", "=" * 100]
     return "\n".join(lineas)
 
@@ -235,7 +265,7 @@ def texto_reporte(e, usuario=""):
 # Base consolidada para Power BI
 # ---------------------------------------------------------------------------
 COLUMNAS_POWER_BI = [
-    "radicado", "tipo_solicitud", "id", "tipo_documento", "fecha_radicacion",
+    "radicado", "tipo_solicitud", "id", "tipo_documento", "perfil_solicitante", "fecha_radicacion",
     "canal_recepcion", "asunto_titulo", "tipo_mascota", "campus_relacionado",
     "fecha_maxima_respuesta", "estado_peticion", "usuario_registro",
     "nombre_registrador", "rol_registrador", "fecha_solucion", "dias_respuesta",
@@ -247,7 +277,8 @@ def base_consolidada(registros, ahora=None):
     """
     Une las cuatro bases en una sola tabla con columnas calculadas.
     Por protección de datos personales (Ley 1581 de 2012) NO se exportan
-    nombre, número de documento, teléfono, correo, dirección ni descripción.
+    nombre, número de documento, teléfono, correo, dirección ni descripción;
+    del correo solo se exporta el perfil derivado.
     """
     ahora = ahora or datetime.now()
     soluciones = fechas_de_solucion()
@@ -262,6 +293,7 @@ def base_consolidada(registros, ahora=None):
             "tipo_solicitud": config.TIPOS_SOLICITUD[r["tipo_solicitud"]]["nombre"],
             "id": r["id"],
             "tipo_documento": r["tipo_documento"],
+            "perfil_solicitante": perfil_solicitante(r),
             "fecha_radicacion": r["fecha_radicacion"],
             "canal_recepcion": r["canal_recepcion"],
             "asunto_titulo": r["asunto_titulo"],

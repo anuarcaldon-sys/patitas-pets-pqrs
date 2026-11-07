@@ -149,6 +149,14 @@ PLAZO_RESPUESTA_DIAS = 15
 # Una PQRS activa está "próxima a vencer" si le quedan menos de estos días
 DIAS_ALERTA_VENCIMIENTO = 5
 
+# Perfil del solicitante (estadística 6). Las bases de MEPEGA no traen un campo
+# de perfil, así que se deriva de los datos disponibles (ver reportes.py).
+DOMINIO_INSTITUCIONAL = "udea.edu.co"
+PERFIL_ORGANIZACION = "Organización (NIT)"
+PERFIL_COMUNIDAD_UDEA = "Comunidad UdeA"
+PERFIL_EXTERNO = "Ciudadano externo"
+PERFILES = [PERFIL_COMUNIDAD_UDEA, PERFIL_EXTERNO, PERFIL_ORGANIZACION]
+
 FILAS_POR_PAGINA = 15       # filas por página en los listados de consola
 MAX_OBSERVACION = 300       # longitud máxima de la observación de un cambio
 

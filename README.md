@@ -14,7 +14,7 @@
   <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es"><img src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png" alt="Licencia CC BY-NC-SA 4.0"></a>
 </p>
 
-> **Estado actual:** versión 2.0.0 del software. Incluye autenticación, registro validado de PQRS, consecutivos independientes por archivo que continúan la numeración de las bases de MEPEGA, radicado de 120 columnas, consultas, cambios de estado con historial, estadísticas y exportación para Power BI.
+> **Estado actual:** versión 2.0.0 del software. Incluye autenticación, registro validado de PQRS, consecutivos independientes por archivo que continúan la numeración de las bases de MEPEGA, radicado de 120 columnas, consultas, cambios de estado con historial, estadísticas, exportación a archivos planos y kit para el tablero de Power BI.
 
 ---
 
@@ -31,6 +31,8 @@
 9. [Algoritmo](#9-algoritmo)
 10. [Manual de usuario](#10-manual-de-usuario)
 11. [GitHub](#11-github)
+12. [Sustentación](#12-sustentación)
+13. [Fechas y documentos](#13-fechas-y-documentos)
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Cómo ejecutar el programa](#cómo-ejecutar-el-programa)
 - [Actas del equipo](#actas-del-equipo)
@@ -82,7 +84,7 @@ El sistema está desarrollado en Python con una estructura modular (módulos y f
 | Radicado | Comprobante con marco ASCII y líneas de exactamente 120 caracteres, guardado en `data/radicados/`. Ver [ejemplo](docs/ejemplo_radicado.txt). |
 | Consultas | Por número de radicado (con historial de estados), por documento del solicitante, estado general, registros activos, más antiguas, próximas a vencer y vencidas. |
 | Cambio de estado | Flujo obligatorio Registrada → En proceso → Solucionada, con observación, bitácora en `data/Historial.txt` y comprobante. |
-| Estadísticas | Promedio de días de respuesta y cinco estadísticas adicionales en pantalla, reporte TXT y base consolidada CSV para Power BI. |
+| Estadísticas | Promedio de días de respuesta y las seis estadísticas del enunciado (mascota, canal, campus, estado, vencimiento y perfil con carga operativa) en pantalla, reporte TXT y base consolidada CSV para Power BI. |
 
 ## 4. Licencia del software
 
@@ -145,6 +147,19 @@ Todo el código está en la carpeta [`src/`](src): 11 módulos en Python que usa
 
 📄 [docs/05_algoritmo.md](docs/05_algoritmo.md) — arquitectura, estructuras de datos, diagramas de flujo, pseudocódigo, pruebas y preguntas de repaso para la sustentación.
 
+### Estadísticas y tablero de Power BI
+
+`reportes.py` calcula la estadística obligatoria (promedio de días de respuesta, en enteros) y las seis adicionales del enunciado, y las exporta a archivos planos:
+
+| Archivo exportado | Contenido |
+|---|---|
+| [`data/exportaciones/reporte_estadisticas_*.txt`](data/exportaciones) | Reporte de todas las estadísticas, igual al que se ve en pantalla |
+| [`data/exportaciones/base_consolidada_pqrs.csv`](data/exportaciones/base_consolidada_pqrs.csv) | Las 12.000 PQRS en una tabla de 20 columnas, sin datos personales: fuente del tablero |
+
+El tablero de Power BI tiene 4 páginas: resumen y tiempos, demanda del servicio, gestión y plazos, y solicitantes y operación. Se construye con el kit de [`docs/powerbi/`](docs/powerbi), que incluye el tema de colores, la consulta de datos, las medidas DAX y los valores de control, siguiendo la [guía de Power BI](docs/08_guia_power_bi.md).
+
+![Diseño de las páginas del tablero](images/powerbi_diseno_paginas.png)
+
 ## 10. Manual de usuario
 
 Guía paso a paso con capturas de pantalla: instalación, ingreso, registro, consultas, cambios de estado, estadísticas, archivos generados, configuración y solución de problemas.
@@ -162,7 +177,28 @@ Repositorio creado por el líder del proyecto con su cuenta institucional de la 
 | `images/` | Logo, diagramas y capturas del manual |
 | `data/` | `Peticion.txt`, `Queja.txt`, `Reclamo.txt`, `Sugerencia.txt`, usuarios, historial y archivos generados |
 
-📄 [docs/07_guia_github.md](docs/07_guia_github.md)
+📄 [docs/07_guia_github.md](docs/07_guia_github.md) · Repositorio: https://github.com/anuarcaldon-sys/patitas-pets-pqrs
+
+## 12. Sustentación
+
+La sustentación es en la semana 16 (18 de noviembre de 2026). Cada integrante tiene cinco minutos para responder las preguntas del docente con el programa funcionando. El programa completo se entrega una semana antes, el 11 de noviembre.
+
+| Preparación | Dónde |
+|---|---|
+| Ejecutar el programa desde una copia recién descargada del repositorio | [Cómo ejecutar el programa](#cómo-ejecutar-el-programa) |
+| Repasar la arquitectura, los algoritmos y las 13 preguntas de repaso | [docs/05_algoritmo.md](docs/05_algoritmo.md) |
+| Comprobar las cifras del tablero de Power BI | [docs/powerbi/valores_control.md](docs/powerbi/valores_control.md) |
+| Explicar las decisiones abiertas con el PO (perfil derivado, fechas de solución) | [Supuestos y preguntas](docs/02_especificacion_requisitos.md#8-supuestos-y-preguntas-para-el-product-owner) |
+
+Cada integrante debe poder explicar cualquier módulo del código, no solo el que desarrolló.
+
+## 13. Fechas y documentos
+
+| Entrega | Fecha | Contenido |
+|---|---|---|
+| Entrega 1 | 30 de septiembre de 2026 (semana 9) | Puntos 1 a 7, actas, documento de arquitectura ([docs/entrega1](docs/entrega1)) |
+| Programa completo al docente | 11 de noviembre de 2026 | Versión 2.0.0 del software en este repositorio |
+| Entrega 2 y sustentación | 18 de noviembre de 2026 (semana 16) | Todo lo descrito en el enunciado: puntos 1 a 13 y tablero de Power BI |
 
 ---
 
@@ -196,8 +232,8 @@ Repositorio creado por el líder del proyecto con su cuenta institucional de la 
 │   ├── ejemplo_radicado.txt
 │   ├── actas/                    # Actas del equipo (Markdown y Word)
 │   ├── entrega1/                 # Documento de la primera entrega y Gantt en Excel
-│   └── powerbi/                  # Tablero de Power BI
-├── images/                       # Logo, diagramas y capturas del manual
+│   └── powerbi/                  # Kit del tablero: tema, consulta, medidas DAX y valores de control
+├── images/                       # Logo, diagramas, diseño del tablero y capturas del manual
 └── data/                         # Archivos planos del programa
     ├── Peticion.txt
     ├── Queja.txt
@@ -206,7 +242,7 @@ Repositorio creado por el líder del proyecto con su cuenta institucional de la 
     ├── Usuarios.txt
     ├── Historial.txt             # Bitácora de cambios de estado
     ├── radicados/                # Radicados y comprobantes generados
-    └── exportaciones/            # Reportes TXT y base CSV para Power BI
+    └── exportaciones/            # Reporte de estadísticas (TXT) y base consolidada (CSV) para Power BI
 ```
 
 ## Cómo ejecutar el programa
@@ -214,7 +250,7 @@ Repositorio creado por el líder del proyecto con su cuenta institucional de la 
 **Requisitos:** Python 3.10 o superior. No se necesitan librerías externas.
 
 ```bash
-git clone https://github.com/[usuario-lider]/patitas-pets-pqrs.git
+git clone https://github.com/anuarcaldon-sys/patitas-pets-pqrs.git
 cd patitas-pets-pqrs
 python src/main.py
 ```

@@ -17,7 +17,7 @@ Para garantizar el éxito y la correcta ejecución del proyecto PATITAS-PETS, lo
 |---|---|---|
 | Anuar | Coordinación, análisis y documentación | Actas, levantamiento de requisitos, reporte de visión, README, plan de proyecto, plan de versionado y gestión del repositorio en GitHub. |
 | Santiago | Arquitectura, lógica y pruebas | Diseño de módulos y funciones, menú de consola, módulo de autenticación, validaciones y pruebas de software. |
-| Sandra | Gestión de datos y Power BI | Estructura de los archivos planos, almacenamiento, consultas, radicados, reportes estadísticos, documentación del desarrollo, manual de usuario y tablero en Power BI. |
+| Sandra | Gestión de datos y reportes | Estructura de los archivos planos, almacenamiento, consultas, radicados, reportes estadísticos, documentación del desarrollo, manual de usuario y estadísticas del sistema. |
 
 ## 2. Tareas, plazos y criterios de evaluación
 
@@ -33,7 +33,7 @@ Las fechas corresponden al cronograma del proyecto ([plan de proyecto](../03_pla
 | Diseño del sistema | Santiago | 03/10/2026 | Flujo general, módulos, validaciones y estadísticas definidos |
 | Autenticación, registro y validaciones | Santiago | 14/10/2026 | Tres intentos, bloqueo visible, sesión activa y reglas del enunciado |
 | Archivos, consultas, radicados y reportes | Sandra | 20/10/2026 | IDs continúan desde 3001; radicado de 120 caracteres |
-| Tablero de Power BI | Sandra | 04/11/2026 | Tres páginas; primera estadística: promedio de días de respuesta |
+| Estadísticas y exportación de resultados | Sandra | 04/11/2026 | Promedio de días de respuesta y seis estadísticas verificadas; reporte TXT y base CSV exportados |
 | Pruebas integrales | Santiago | 05/11/2026 | Casos de prueba ejecutados y errores corregidos |
 | Plan de versionado | Anuar | 07/11/2026 | Versiones con su avance en días |
 | Documentación del desarrollo y manual de usuario | Sandra | 09/11/2026 | Manual completo en la carpeta docs |

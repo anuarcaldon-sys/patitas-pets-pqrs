@@ -5,7 +5,7 @@ Lectura y escritura de los archivos planos del programa (carpeta data/):
 
 - Peticion.txt, Queja.txt, Reclamo.txt y Sugerencia.txt: una PQRS por línea.
 - Historial.txt: bitácora de cambios de estado.
-- data/radicados/ y data/exportaciones/: comprobantes y reportes generados.
+- data/radicados/: comprobantes generados (las exportaciones las hace reportes.py).
 
 Reglas que cumple este módulo:
 - Cada tipo de PQRS se guarda solo en su propio archivo.
@@ -15,8 +15,6 @@ Reglas que cumple este módulo:
   numeración de las bases de datos entregadas (3000 -> 3001) y nunca se
   repite un número.
 """
-
-import csv
 
 import config
 
@@ -208,18 +206,3 @@ def guardar_texto(carpeta, nombre_archivo, texto):
 def guardar_radicado(texto, nombre_archivo):
     """Guarda el comprobante en data/radicados/ y devuelve la ruta del archivo."""
     return guardar_texto(config.CARPETA_RADICADOS, nombre_archivo, texto)
-
-
-def exportar_csv(nombre_archivo, columnas, filas):
-    """
-    Exporta una lista de diccionarios a CSV (separado por comas) en
-    data/exportaciones/. Se usa UTF-8 con BOM para que Excel y Power BI
-    reconozcan las tildes.
-    """
-    config.CARPETA_EXPORTACIONES.mkdir(parents=True, exist_ok=True)
-    ruta = config.CARPETA_EXPORTACIONES / nombre_archivo
-    with open(ruta, "w", encoding="utf-8-sig", newline="") as archivo:
-        escritor = csv.DictWriter(archivo, fieldnames=columnas, lineterminator="\n")
-        escritor.writeheader()
-        escritor.writerows(filas)
-    return ruta

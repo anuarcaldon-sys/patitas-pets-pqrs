@@ -17,7 +17,7 @@ python src/validaciones.py  # ejecuta las pruebas de las reglas de validación
 | `registro.py` | Opción 1: registrar PQRS |
 | `consultas.py` | Opción 2: consultar PQRS |
 | `cambios.py` | Opción 3: registrar cambio de estado |
-| `reportes.py` | Opción 4: estadísticas y exportación para Power BI |
+| `reportes.py` | Opción 4: estadísticas con Pandas y NumPy, y exportación a archivos planos |
 | `archivos.py` | Lectura y escritura de los archivos planos de `data/` |
 | `radicado.py` | Comprobante de 120 columnas |
 

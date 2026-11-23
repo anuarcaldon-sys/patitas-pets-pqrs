@@ -2,7 +2,7 @@
 reportes.py
 -----------
 Cálculo de estadísticas de las PQRS y preparación de los archivos que se
-exportan (reporte en texto y base consolidada para Power BI).
+exportan (reporte en texto y base consolidada de PQRS en CSV).
 
 Estadística obligatoria:
     0. Promedio de días de respuesta (valor entero).
@@ -178,7 +178,7 @@ def por_clasificacion_de_plazo(registros, etiqueta, ahora):
 def tabla_pqrs(registros, ahora=None):
     """
     Convierte la lista de PQRS en un DataFrame y le agrega las columnas
-    calculadas que usan las estadísticas y la base para Power BI.
+    calculadas que usan las estadísticas y la base consolidada.
     """
     ahora = pd.Timestamp(ahora or datetime.now())
     df = pd.DataFrame(registros, columns=config.CAMPOS)
@@ -340,9 +340,9 @@ def texto_reporte(e, usuario=""):
 
 
 # ---------------------------------------------------------------------------
-# Base consolidada para Power BI
+# Base consolidada de PQRS (exportación a CSV)
 # ---------------------------------------------------------------------------
-COLUMNAS_POWER_BI = [
+COLUMNAS_BASE = [
     "radicado", "tipo_solicitud", "id", "tipo_documento", "perfil_solicitante", "fecha_radicacion",
     "canal_recepcion", "asunto_titulo", "tipo_mascota", "campus_relacionado",
     "fecha_maxima_respuesta", "estado_peticion", "usuario_registro",
@@ -363,7 +363,7 @@ def base_consolidada(registros, ahora=None):
     df["radicado"] = df["tipo_solicitud"].map(prefijos) + "-" + df["id"].str.zfill(6)
     df["tipo_solicitud"] = df["tipo_nombre"]
     df["fecha_solucion"] = df["solucion_dt"].dt.strftime(config.FORMATO_FECHA).fillna("")
-    return df[COLUMNAS_POWER_BI]
+    return df[COLUMNAS_BASE]
 
 
 def exportar_reporte_texto(texto):
@@ -372,10 +372,10 @@ def exportar_reporte_texto(texto):
     return archivos.guardar_texto(config.CARPETA_EXPORTACIONES, nombre, texto)
 
 
-def exportar_base_power_bi(registros):
+def exportar_base_consolidada(registros):
     """Guarda la base consolidada en data/exportaciones/base_consolidada_pqrs.csv."""
     config.CARPETA_EXPORTACIONES.mkdir(parents=True, exist_ok=True)
     ruta = config.CARPETA_EXPORTACIONES / "base_consolidada_pqrs.csv"
-    # UTF-8 con BOM para que Excel y Power BI reconozcan las tildes
+    # UTF-8 con BOM para que Excel reconozca las tildes
     base_consolidada(registros).to_csv(ruta, index=False, encoding="utf-8-sig", lineterminator="\n")
     return ruta

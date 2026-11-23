@@ -15,10 +15,10 @@ El equipo de trabajo establece las normas de colaboración y sinergia orientadas
 
 ## 2. Metodología de trabajo
 
-- **Trabajo por fases:** el equipo sigue las fases del cronograma (análisis, diseño, desarrollo, pruebas, documentación, Power BI y sustentación) y consulta al docente, en su rol de Product Owner, las dudas sobre requisitos.
+- **Trabajo por fases:** el equipo sigue las fases del cronograma (análisis, diseño, desarrollo, pruebas, documentación, estadísticas y sustentación) y consulta al docente, en su rol de Product Owner, las dudas sobre requisitos.
 - **Integración técnica:** apoyo cruzado en el desarrollo y la depuración del código, asegurando que los módulos de lógica, validaciones y archivos planos se integren sin fricciones. Cada integrante trabaja en su propia rama de GitHub y el líder integra los cambios en la rama principal.
 - **Revisión por pares:** revisiones conjuntas de los entregables y documentos técnicos antes de su publicación en GitHub.
-- **Transparencia de avances:** socialización semanal de los avances para mantener a todos informados sobre el estado del software y de los reportes en Power BI.
+- **Transparencia de avances:** socialización semanal de los avances para mantener a todos informados sobre el estado del software y de los reportes estadísticos.
 
 ## 3. Canales y frecuencia de comunicación
 

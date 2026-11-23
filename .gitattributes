@@ -9,6 +9,5 @@
 
 # Archivos binarios: Git no debe modificarlos
 *.png  binary
-*.pbix binary
 *.docx binary
 *.xlsx binary

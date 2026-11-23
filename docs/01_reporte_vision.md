@@ -60,7 +60,6 @@ MEPEGA ya cuenta con cuatro bases de datos en archivos planos (3.000 registros p
 4. Almacenar cada tipo de PQRS en su propio archivo plano con una estructura común.
 5. Emitir un radicado en texto plano de 120 caracteres de ancho que certifique la información registrada.
 6. Consultar el estado de las PQRS y generar estadísticas sobre la atención (versión 2.0).
-7. Construir un tablero en Power BI que apoye la toma de decisiones (versión 2.0).
 
 ## 7. Beneficios esperados
 
@@ -73,14 +72,14 @@ MEPEGA ya cuenta con cuatro bases de datos en archivos planos (3.000 registros p
 | **Comprobante estandarizado** | Radicado con formato fijo de 120 columnas, listo para imprimir o enviar |
 | **Seguridad básica** | Ingreso obligatorio, máximo 3 intentos y bloqueo temporal visible en pantalla |
 | **Bajo costo** | Funciona solo con Python y archivos de texto; no requiere licencias ni servidores |
-| **Base para analítica** | Los archivos planos alimentan los reportes y el tablero de Power BI |
+| **Base para analítica** | Las estadísticas se calculan con Pandas y NumPy y se exportan a archivos planos (TXT y CSV) para análisis posteriores |
 
 ## 8. Alcance por versiones
 
 | Versión | Entrega | Funcionalidades |
 |---|---|---|
 | **1.0** | Entrega 1 (30-sep-2026) | Login con usuario o correo, 3 intentos y bloqueo de 30 s; sesión activa; registro de PQRS con todas las validaciones; consecutivo por archivo que continúa desde 3001; almacenamiento en los 4 archivos planos; radicado de 120 columnas guardado en `data/radicados/`; consulta de una PQRS por tipo e ID |
-| **2.0** | Entrega 2 (18-nov-2026) | Registro de cambios de estado (Registrada → En proceso → Solucionada); consultas de registros activos, más antiguos y próximos a vencer; `reportes.py` con el promedio de días de respuesta y las seis estadísticas adicionales del enunciado; exportación de resultados a archivo plano; tablero en Power BI; manual de usuario y plan de versionado |
+| **2.0** | Entrega 2 (18-nov-2026) | Registro de cambios de estado (Registrada → En proceso → Solucionada); consultas de registros activos, más antiguos y próximos a vencer; `reportes.py` con el promedio de días de respuesta y las seis estadísticas adicionales del enunciado; exportación de resultados a archivo plano; manual de usuario y plan de versionado |
 
 **Fuera del alcance:** interfaz web o gráfica, base de datos relacional, envío de notificaciones por correo, atención de la solicitud veterinaria en sí misma y administración de usuarios desde el programa.
 

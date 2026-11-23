@@ -19,10 +19,10 @@ Todo el código del proyecto está en la carpeta [`src/`](../src). Este document
 | `registro.py` | 181 | Opción 1: captura guiada y guardado de una PQRS | `registrar_pqrs`, `capturar_datos`, `pedir_texto`, `elegir` |
 | `consultas.py` | 182 | Opción 2: consultas y listados | `menu_consultas`, `buscar_por_radicado`, `ver_listado` |
 | `cambios.py` | 90 | Opción 3: cambio de estado | `registrar_cambio` |
-| `reportes.py` | 381 | Opción 4: estadísticas y archivos para Power BI | `calcular_estadisticas`, `texto_reporte`, `base_consolidada` |
-| `archivos.py` | 225 | Lectura y escritura de todos los archivos planos | `leer_registros`, `siguiente_id`, `guardar_registro`, `actualizar_registro` |
+| `reportes.py` | 381 | Opción 4: estadísticas con Pandas y NumPy, y exportación a archivos planos | `calcular_estadisticas`, `texto_reporte`, `base_consolidada` |
+| `archivos.py` | 208 | Lectura y escritura de todos los archivos planos | `leer_registros`, `siguiente_id`, `guardar_registro`, `actualizar_registro` |
 | `radicado.py` | 141 | Comprobante de 120 columnas | `construir_radicado`, `numero_radicado` |
-| **Total** | **1.975** | | |
+| **Total** | **1.958** | | |
 
 El programa usa la biblioteca estándar de Python (`pathlib`, `datetime`, `re`, `csv`, `textwrap`, `unicodedata`, `getpass`, `time`, `os`) y dos librerías externas, instaladas con `pip install -r requirements.txt`:
 
@@ -212,7 +212,7 @@ El orden importa: una organización con correo institucional se cuenta como orga
 | `data/Historial.txt` | Radicado de consulta y promedio de respuesta | Cada cambio de estado | `archivos.py` |
 | `data/radicados/*.txt` | — | Radicado de registro y comprobante de cada cambio | `archivos.py`, `radicado.py` |
 | `data/exportaciones/reporte_estadisticas_*.txt` | — | Opción 4.2 | `reportes.py` |
-| `data/exportaciones/base_consolidada_pqrs.csv` | — | Opción 4.3 (fuente de Power BI) | `reportes.py` |
+| `data/exportaciones/base_consolidada_pqrs.csv` | — | Opción 4.3 (base consolidada) | `reportes.py` |
 
 ## 6. Pruebas realizadas
 
@@ -229,8 +229,9 @@ El orden importa: una organización con correo institucional se cuenta como orga
 | 9 | Intentar cambiar una PQRS solucionada | Mensaje "no admite más cambios" | ✅ |
 | 10 | Archivo de datos sin salto de línea final | El nuevo registro queda en su propia línea | ✅ |
 | 11 | Archivo de datos inexistente | Se crea con encabezado y el consecutivo inicia en 1 | ✅ |
-| 12 | Estadísticas y base para Power BI con 12.001 registros | Cálculo en menos de 1 segundo; CSV de 12.001 filas y 20 columnas | ✅ |
-| 13 | Valores del reporte frente a un cálculo independiente con pandas sobre el CSV exportado | Todas las cifras coinciden (`docs/powerbi/valores_control.md`) | ✅ |
+| 12 | Estadísticas y base consolidada con 12.001 registros | Cálculo en menos de 1 segundo; CSV de 12.001 filas y 20 columnas | ✅ |
+| 13 | Valores del reporte frente a un cálculo independiente con pandas sobre el CSV exportado | Todas las cifras coinciden | ✅ |
+| 14 | Estadísticas con Pandas y NumPy frente a la versión anterior en Python puro, en tres fechas distintas | Reporte y CSV idénticos carácter por carácter | ✅ |
 
 ## 7. Preguntas de repaso para la sustentación
 
@@ -247,7 +248,7 @@ Cada integrante debe poder responder cualquiera de estas preguntas y señalar la
 9. ¿Cuándo una PQRS se considera "próxima a vencer"? *(reportes.py, `clasificar_plazo`)*
 10. ¿Qué hace `dict(zip(encabezado, valores))`? *(archivos.py, `leer_archivo_plano`)*
 11. ¿Por qué el programa funciona aunque se ejecute desde otra carpeta? *(config.py, `RAIZ_PROYECTO`)*
-12. ¿Por qué la base para Power BI no incluye nombres, teléfonos ni correos? *(reportes.py, `base_consolidada`)*
+12. ¿Por qué la base consolidada no incluye nombres, teléfonos ni correos? *(reportes.py, `base_consolidada`)*
 13. ¿Cómo se obtiene el perfil del solicitante si las bases no tienen ese campo? *(reportes.py, `perfil_solicitante` y `tabla_pqrs`)*
 14. ¿Qué diferencia hay entre un DataFrame y una Series, y dónde se usa cada uno? *(reportes.py, `tabla_pqrs` y `conteo`)*
 15. ¿Qué hace `np.select` en la clasificación del estado del plazo? *(reportes.py, `tabla_pqrs`)*

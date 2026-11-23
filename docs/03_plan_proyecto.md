@@ -11,7 +11,7 @@
 | Elemento | Cómo lo aplicamos |
 |---|---|
 | **Product Owner** | El docente del curso. El equipo lo entrevista para levantar y aclarar requisitos (ver preguntas en la [especificación de requisitos](02_especificacion_requisitos.md#8-supuestos-y-preguntas-para-el-product-owner)). |
-| **Fases** | Siete fases: análisis, diseño, desarrollo, pruebas, documentación, Power BI y preparación de la sustentación, en 10 semanas (70 días). |
+| **Fases** | Siete fases: análisis, diseño, desarrollo, pruebas, documentación, estadísticas y reportes, y preparación de la sustentación, en 10 semanas (70 días). |
 | **Reunión de seguimiento** | Semanal, de 30 minutos, con acta de seguimiento ([formato](actas/04_plantilla_acta_seguimiento.md)). |
 | **Control de versiones** | Repositorio en GitHub administrado por el líder; cada integrante trabaja en una rama y el líder integra en `main`. |
 | **Definición de terminado** | El entregable funciona, está revisado por otro integrante, está en GitHub y **los tres integrantes pueden explicarlo**. |
@@ -22,7 +22,7 @@
 |---|---|---|
 | Anuar Ferney Caldón Quira | Líder del proyecto: coordinación, análisis y documentación | Actas, levantamiento de requisitos, reporte de visión, README, plan de proyecto, plan de versionado y gestión del repositorio en GitHub |
 | Santiago Domínguez Padilla | Arquitectura, lógica y pruebas | Diseño de módulos y funciones, menú de consola, autenticación, validaciones y pruebas de software |
-| Sandra Yulieth Salcedo Salazar | Gestión de datos y Power BI | Archivos planos, almacenamiento, consultas, radicados, reportes, documentación del desarrollo, manual de usuario y tablero de Power BI |
+| Sandra Yulieth Salcedo Salazar | Gestión de datos y reportes | Archivos planos, almacenamiento, consultas, radicados, reportes, documentación del desarrollo, manual de usuario y estadísticas |
 
 La asignación está firmada en el [Acta de Responsabilidad](actas/03_acta_responsabilidad.md).
 
@@ -39,7 +39,7 @@ El proyecto va del **10 de septiembre** (día 1) al **18 de noviembre de 2026** 
 | 3. Desarrollo | 04/10/2026 a 20/10/2026 | 31 | Santiago y Sandra |
 | 4. Pruebas | 15/10/2026 a 05/11/2026 | 22 | Santiago |
 | 5. Documentación | 18/09/2026 a 09/11/2026 | 29 | Anuar y Sandra |
-| 6. Power BI | 21/10/2026 a 04/11/2026 | 15 | Sandra |
+| 6. Estadísticas y reportes | 21/10/2026 a 04/11/2026 | 15 | Sandra |
 | 7. Preparación de sustentación | 08/11/2026 a 17/11/2026 | 13 | Equipo |
 
 ### Hitos
@@ -102,11 +102,11 @@ gantt
     5.7 Documentar el desarrollo (algoritmo) :a5_7, 2026-11-03, 4d
     5.8 Elaborar manual de usuario :a5_8, 2026-11-06, 4d
     5.9 Elaborar plan de versionado :a5_9, 2026-11-05, 3d
-    section Power BI
+    section Estadísticas y reportes
     6.1 Consolidar los datos :a6_1, 2026-10-21, 3d
     6.2 Preparar la información :a6_2, 2026-10-24, 3d
     6.3 Calcular indicadores :a6_3, 2026-10-27, 3d
-    6.4 Diseñar las tres páginas del dashboard :a6_4, 2026-10-30, 4d
+    6.4 Diseñar el reporte de estadísticas y la exportación :a6_4, 2026-10-30, 4d
     6.5 Verificar que las estadísticas correspondan :a6_5, 2026-11-03, 2d
     section Preparación de sustentación
     7.1 Verificar que el software sea ejecutable :a7_1, 2026-11-08, 2d
@@ -161,11 +161,11 @@ gantt
 | 5.7 | Documentar el desarrollo (algoritmo) | Documentación | Sandra | 4 | 03/11/2026 | 06/11/2026 |
 | 5.8 | Elaborar manual de usuario | Documentación | Sandra | 4 | 06/11/2026 | 09/11/2026 |
 | 5.9 | Elaborar plan de versionado | Documentación | Anuar | 3 | 05/11/2026 | 07/11/2026 |
-| 6.1 | Consolidar los datos | Power BI | Sandra | 3 | 21/10/2026 | 23/10/2026 |
-| 6.2 | Preparar la información | Power BI | Sandra | 3 | 24/10/2026 | 26/10/2026 |
-| 6.3 | Calcular indicadores | Power BI | Sandra | 3 | 27/10/2026 | 29/10/2026 |
-| 6.4 | Diseñar las tres páginas del dashboard | Power BI | Sandra | 4 | 30/10/2026 | 02/11/2026 |
-| 6.5 | Verificar que las estadísticas correspondan | Power BI | Sandra | 2 | 03/11/2026 | 04/11/2026 |
+| 6.1 | Consolidar los datos | Estadísticas y reportes | Sandra | 3 | 21/10/2026 | 23/10/2026 |
+| 6.2 | Preparar la información | Estadísticas y reportes | Sandra | 3 | 24/10/2026 | 26/10/2026 |
+| 6.3 | Calcular indicadores | Estadísticas y reportes | Sandra | 3 | 27/10/2026 | 29/10/2026 |
+| 6.4 | Diseñar el reporte de estadísticas y la exportación | Estadísticas y reportes | Sandra | 4 | 30/10/2026 | 02/11/2026 |
+| 6.5 | Verificar que las estadísticas correspondan | Estadísticas y reportes | Sandra | 2 | 03/11/2026 | 04/11/2026 |
 | 7.1 | Verificar que el software sea ejecutable | Preparación de sustentación | Anuar | 2 | 08/11/2026 | 09/11/2026 |
 | 7.2 | Revisar el funcionamiento completo y entregar el programa | Preparación de sustentación | Anuar | 3 | 09/11/2026 | 11/11/2026 |
 | 7.3 | Estudiar decisiones de diseño | Preparación de sustentación | Equipo | 3 | 12/11/2026 | 14/11/2026 |
@@ -192,7 +192,7 @@ El enunciado establece que las horas no se pagan en dinero sino en tiempo de pr�
 |---|---|---:|---:|---:|
 | Anuar | Líder del proyecto (análisis, coordinación y actas) | 50 | $8.337,64 | $416.882 |
 | Santiago | Desarrollo y pruebas (lógica, validaciones y pruebas) | 50 | $8.337,64 | $416.882 |
-| Sandra | Gestión de datos y reportes (archivos planos y Power BI) | 50 | $8.337,64 | $416.882 |
+| Sandra | Gestión de datos y reportes (archivos planos y estadísticas) | 50 | $8.337,64 | $416.882 |
 | **Total** | | **150** | | **$1.250.646** |
 
 ### 4.3 Desglose por fase
@@ -206,11 +206,11 @@ El enunciado establece que las horas no se pagan en dinero sino en tiempo de pr�
 | Santiago | Fase 3: Desarrollo (login, menús y validaciones) | 25 | $208.441 |
 | Santiago | Fase 4: Pruebas integrales y corrección de errores | 10 | $83.376 |
 | Sandra | Fase 3: Desarrollo (estructura y gestión de archivos planos) | 20 | $166.753 |
-| Sandra | Fase 6: Consolidación de datos y dashboard en Power BI | 20 | $166.753 |
+| Sandra | Fase 6: Consolidación de datos, estadísticas y reportes | 20 | $166.753 |
 | Sandra | Fase 5: Reportes, documentación del desarrollo y manual de usuario | 10 | $83.376 |
 | **Total** | | **150** | **$1.250.646** |
 
-Los recursos de software (Python, Visual Studio Code, GitHub y Power BI Desktop) son gratuitos, y los equipos e internet son aportes propios de los integrantes.
+Los recursos de software (Python, NumPy, Pandas, Visual Studio Code y GitHub) son gratuitos, y los equipos e internet son aportes propios de los integrantes.
 
 ## 5. Riesgos
 

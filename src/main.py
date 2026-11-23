@@ -29,7 +29,7 @@ def menu_estadisticas(sesion):
         interfaz.mostrar_encabezado("4. ESTADÍSTICAS", sesion)
         print("      1. Ver estadísticas en pantalla")
         print("      2. Exportar reporte de estadísticas (TXT)")
-        print("      3. Exportar base consolidada para Power BI (CSV)")
+        print("      3. Exportar base consolidada de PQRS (CSV)")
         print("      4. Volver al menú principal\n")
         opcion = interfaz.pedir_opcion("  Seleccione una opción (1-4): ", 1, 4)
         if opcion == 4:
@@ -38,7 +38,7 @@ def menu_estadisticas(sesion):
         print("\n  Calculando, por favor espere...")
         todas = archivos.leer_todas()
         if opcion == 3:
-            ruta = reportes.exportar_base_power_bi(todas)
+            ruta = reportes.exportar_base_consolidada(todas)
             print(f"  [OK] Base consolidada exportada ({len(todas)} filas): {ruta}")
         else:
             texto = reportes.texto_reporte(reportes.calcular_estadisticas(todas), sesion["usuario"])

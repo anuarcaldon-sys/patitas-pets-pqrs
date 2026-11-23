@@ -47,7 +47,7 @@ El **avance acumulado** es el porcentaje de los 141 días-actividad del cronogra
 | **v1.3.0** | 33 | 12-oct-2026 | | 48 % | registro.py, consultas.py y cambios.py (registro, consulta y actualización de estados con Historial.txt). |  |
 | **v1.4.0** | 37 | 16-oct-2026 | | 55 % | validaciones.py completo y radicado.py (comprobante de 120 caracteres). |  |
 | **v1.5.0** | 41 | 20-oct-2026 | | 60 % | reportes.py: promedio de días de respuesta, estadísticas y exportación TXT y CSV. |  |
-| **v1.6.0** | 56 | 04-nov-2026 | | 81 % | Tablero de Power BI de tres páginas. |  |
+| **v1.6.0** | 56 | 04-nov-2026 | | 81 % | Estadísticas verificadas con Pandas y NumPy, y exportación de resultados. |  |
 | **v1.7.0** | 57 | 05-nov-2026 | | 83 % | Pruebas integrales terminadas y errores corregidos. |  |
 | **v1.8.0** | 61 | 09-nov-2026 | | 92 % | Documentación del desarrollo, plan de versionado y manual de usuario. |  |
 | **v2.0.0** | 63 | 11-nov-2026 | | 94 % | Programa completo entregado al docente, una semana antes de la sustentación. | Entrega del programa |
@@ -74,8 +74,8 @@ El **avance acumulado** es el porcentaje de los 141 días-actividad del cronogra
 - `radicado.py`: comprobante de 120 caracteres con marco ASCII.
 - `consultas.py`: consulta por radicado, por documento, estado general, activas, más antiguas, próximas a vencer y vencidas.
 - `cambios.py`: flujo Registrada → En proceso → Solucionada, con historial en `data/Historial.txt`.
-- `reportes.py`: promedio de días de respuesta, las seis estadísticas adicionales del enunciado (incluido el perfil del solicitante derivado y la carga operativa) y exportación TXT y CSV para Power BI.
-- Kit del tablero de Power BI (tema, consulta, medidas DAX, diseño de 4 páginas y valores de control), plan de versionado, documentación del algoritmo y manual de usuario.
+- `reportes.py`: promedio de días de respuesta, las seis estadísticas adicionales del enunciado (incluido el perfil del solicitante derivado y la carga operativa) y exportación TXT y CSV, calculadas con Pandas (DataFrame y Series) y NumPy.
+- Plan de versionado, documentación del algoritmo y manual de usuario.
 
 ### v2.0.1 — Sustentación (día 70, 18 de noviembre)
 

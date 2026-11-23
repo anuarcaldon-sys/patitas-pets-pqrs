@@ -85,12 +85,11 @@
 | RF-29 | El sistema debe listar los registros activos, las PQRS más antiguas y las que están próximas a vencer o vencidas, en tablas paginadas. | Debe | 2.0 | ✅ |
 | RF-30 | `reportes.py` debe calcular el promedio de días de respuesta (en enteros) y las estadísticas por tipo de mascota, canal, campus, estado, vencimiento y perfil del solicitante con carga operativa (por rol y por usuario), más las complementarias por tipo de PQRS y por tipo de documento. | Debe | 2.0 | ✅ |
 | RF-31 | El sistema debe exportar los resultados a un archivo plano: reporte de estadísticas (TXT) y base consolidada (CSV). | Debe | 2.0 | ✅ |
-| RF-32 | El equipo debe construir un tablero en Power BI de mínimo 3 páginas con las estadísticas exigidas. El kit (tema, consulta, medidas, diseño de 4 páginas y valores de control) está en [docs/powerbi](powerbi) y la guía en [08_guia_power_bi.md](08_guia_power_bi.md). | Debe | 2.0 | 🔜 |
-| RF-33 | Cada cambio de estado debe quedar en `data/Historial.txt` con fecha, usuario, estado anterior, estado nuevo y observación opcional. | Debe | 2.0 | ✅ |
-| RF-34 | Cada cambio de estado debe generar un comprobante en `data/radicados/`. | Debería | 2.0 | ✅ |
-| RF-35 | El sistema debe permitir buscar todas las PQRS de un solicitante por su número de documento. | Debería | 2.0 | ✅ |
-| RF-36 | La base exportada para Power BI debe incluir columnas calculadas (perfil del solicitante, días de respuesta, antigüedad, días para vencer, estado del plazo) y excluir los datos personales del solicitante. | Debe | 2.0 | ✅ |
-| RF-37 | El perfil del solicitante se deriva de los datos disponibles: NIT → Organización (NIT); correo `@udea.edu.co` → Comunidad UdeA; otro → Ciudadano externo. | Debe | 2.0 | ✅ |
+| RF-32 | Cada cambio de estado debe quedar en `data/Historial.txt` con fecha, usuario, estado anterior, estado nuevo y observación opcional. | Debe | 2.0 | ✅ |
+| RF-33 | Cada cambio de estado debe generar un comprobante en `data/radicados/`. | Debería | 2.0 | ✅ |
+| RF-34 | El sistema debe permitir buscar todas las PQRS de un solicitante por su número de documento. | Debería | 2.0 | ✅ |
+| RF-35 | La base consolidada exportada en CSV debe incluir columnas calculadas (perfil del solicitante, días de respuesta, antigüedad, días para vencer, estado del plazo) y excluir los datos personales del solicitante. | Debe | 2.0 | ✅ |
+| RF-36 | El perfil del solicitante se deriva de los datos disponibles: NIT → Organización (NIT); correo `@udea.edu.co` → Comunidad UdeA; otro → Ciudadano externo. | Debe | 2.0 | ✅ |
 
 ## 4. Requisitos no funcionales
 
@@ -172,9 +171,9 @@ Cada línea de los archivos `Peticion.txt`, `Queja.txt`, `Reclamo.txt` y `Sugere
 | `registro.py` | Captura guiada, confirmación y guardado de la PQRS | RF-10 a RF-18 |
 | `archivos.py` | Lectura/escritura de los 4 archivos y consecutivos | RF-15, RF-19 a RF-22, RNF-05 |
 | `radicado.py` | Comprobante de 120 columnas | RF-23 a RF-26 |
-| `consultas.py` | Consultas y listados | RF-27, RF-29, RF-35 |
-| `cambios.py` | Cambio de estado, historial y comprobante | RF-28, RF-33, RF-34 |
-| `reportes.py` | Estadísticas, reporte y base para Power BI | RF-30, RF-31, RF-36, RF-37 |
+| `consultas.py` | Consultas y listados | RF-27, RF-29, RF-34 |
+| `cambios.py` | Cambio de estado, historial y comprobante | RF-28, RF-32, RF-33 |
+| `reportes.py` | Estadísticas con Pandas y NumPy, reporte TXT y base consolidada CSV | RF-30, RF-31, RF-35, RF-36 |
 
 ## 8. Supuestos y preguntas para el Product Owner
 
@@ -182,7 +181,7 @@ Decisiones tomadas por el equipo que conviene validar en la entrevista con el PO
 
 1. **Base de cálculo de la fecha máxima.** El enunciado dice "fecha de registro + N días", pero la estructura de datos no tiene un campo `fecha_registro` y las bases entregadas calculan la fecha máxima desde `fecha_radicacion`. Mantuvimos esa base de cálculo para no alterar la estructura. ¿Es correcto?
 2. **Plazo.** Elegimos 15 días calendario. ¿El PO prefiere días hábiles?
-3. **Perfil del solicitante.** La estadística 6 pide clasificar por perfil (Estudiante, Docente, Administrativo, Ciudadano), pero ese campo no existe en la estructura ni en las bases. Mientras el PO decide, PATITAS-PETS lo deriva del tipo de documento y del dominio del correo (RF-37). ¿Se agrega un campo 19 para distinguir estudiantes, docentes y administrativos?
+3. **Perfil del solicitante.** La estadística 6 pide clasificar por perfil (Estudiante, Docente, Administrativo, Ciudadano), pero ese campo no existe en la estructura ni en las bases. Mientras el PO decide, PATITAS-PETS lo deriva del tipo de documento y del dominio del correo (RF-36). ¿Se agrega un campo 19 para distinguir estudiantes, docentes y administrativos?
 4. **Mascota "Otro".** El radicado del enunciado menciona "Perro o Gato", pero el catálogo y las bases incluyen "Otro". Lo conservamos.
 5. **Texto ASCII del radicado.** El marco usa solo caracteres ASCII y el contenido conserva tildes y ñ (UTF-8). Si se exige ASCII puro, basta con activar `RADICADO_SOLO_ASCII = True` en `config.py`.
 6. **Permisos por rol.** ¿Deben Operador, Supervisor y Administrador tener opciones distintas en el menú?

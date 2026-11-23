@@ -14,7 +14,7 @@
   <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es"><img src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png" alt="Licencia CC BY-NC-SA 4.0"></a>
 </p>
 
-> **Estado actual:** versión 2.0.0 del software. Incluye autenticación, registro validado de PQRS, consecutivos independientes por archivo que continúan la numeración de las bases de MEPEGA, radicado de 120 columnas, consultas, cambios de estado con historial, estadísticas, exportación a archivos planos y kit para el tablero de Power BI.
+> **Estado actual:** versión 2.0.0 del software. Incluye autenticación, registro validado de PQRS, consecutivos independientes por archivo que continúan la numeración de las bases de MEPEGA, radicado de 120 columnas, consultas, cambios de estado con historial, estadísticas con Pandas y NumPy, y exportación de resultados a archivos planos.
 
 ---
 
@@ -45,7 +45,7 @@
 |---|---|---|
 | Anuar Ferney Caldón Quira | Ingeniería Industrial | Líder del proyecto: coordinación, análisis y documentación |
 | Santiago Domínguez Padilla | Ingeniería Industrial | Desarrollo, validaciones y pruebas |
-| Sandra Yulieth Salcedo Salazar | Ingeniería Industrial | Gestión de archivos, datos, reportes y Power BI |
+| Sandra Yulieth Salcedo Salazar | Ingeniería Industrial | Gestión de archivos, datos y reportes |
 
 El equipo trabaja de manera colaborativa, distribuyendo las actividades de acuerdo con las habilidades y responsabilidades establecidas en las [actas de entendimiento, colaboración y responsabilidad](#actas-del-equipo).
 
@@ -74,7 +74,7 @@ Los tres integrantes pertenecen al programa de Ingeniería Industrial de la Univ
 
 **PATITAS-PETS – Gestor de PQRS** es un software de consola orientado a la gestión organizada de Peticiones, Quejas, Reclamos y Sugerencias relacionadas con la atención de perros y gatos en la Universidad de Antioquia. Permite registrar y administrar las PQRS recibidas por diferentes canales, almacenar la información en archivos planos independientes, consultar los registros, actualizar su estado, generar comprobantes de radicación y obtener información estadística para apoyar el seguimiento de la atención.
 
-El sistema está desarrollado en Python con una estructura modular (módulos y funciones separados por responsabilidad) y valida toda la información que digitan los usuarios. Los datos se consolidan para un tablero de control en Power BI. El logo muestra un perro y un gato, protagonistas de la atención veterinaria que apoya MEPEGA, junto con el nombre del software.
+El sistema está desarrollado en Python con una estructura modular (módulos y funciones separados por responsabilidad) y valida toda la información que digitan los usuarios. Las estadísticas se calculan con Pandas y NumPy y se exportan a archivos planos. El logo muestra un perro y un gato, protagonistas de la atención veterinaria que apoya MEPEGA, junto con el nombre del software.
 
 | Módulo | Qué hace |
 |---|---|
@@ -84,7 +84,7 @@ El sistema está desarrollado en Python con una estructura modular (módulos y f
 | Radicado | Comprobante con marco ASCII y líneas de exactamente 120 caracteres, guardado en `data/radicados/`. Ver [ejemplo](docs/ejemplo_radicado.txt). |
 | Consultas | Por número de radicado (con historial de estados), por documento del solicitante, estado general, registros activos, más antiguas, próximas a vencer y vencidas. |
 | Cambio de estado | Flujo obligatorio Registrada → En proceso → Solucionada, con observación, bitácora en `data/Historial.txt` y comprobante. |
-| Estadísticas | Promedio de días de respuesta y las seis estadísticas del enunciado (mascota, canal, campus, estado, vencimiento y perfil con carga operativa) en pantalla, reporte TXT y base consolidada CSV para Power BI. |
+| Estadísticas | Promedio de días de respuesta y las seis estadísticas del enunciado (mascota, canal, campus, estado, vencimiento y perfil con carga operativa) en pantalla, reporte TXT y base consolidada en CSV. |
 
 ## 4. Licencia del software
 
@@ -141,24 +141,21 @@ Todo el código está en la carpeta [`src/`](src): 11 módulos en Python. Las es
 | `registro.py` | Registrar PQRS |
 | `consultas.py` | Consultar PQRS |
 | `cambios.py` | Registrar cambio de estado |
-| `reportes.py` | Estadísticas y exportación para Power BI |
+| `reportes.py` | Estadísticas con Pandas y NumPy, y exportación a archivos planos |
 | `archivos.py` | Lectura y escritura de los archivos planos |
 | `radicado.py` | Comprobante de 120 columnas |
 
 📄 [docs/05_algoritmo.md](docs/05_algoritmo.md) — arquitectura, estructuras de datos, diagramas de flujo, pseudocódigo, pruebas y preguntas de repaso para la sustentación.
 
-### Estadísticas y tablero de Power BI
+### Estadísticas y exportación de resultados
 
 `reportes.py` calcula la estadística obligatoria (promedio de días de respuesta, en enteros) y las seis adicionales del enunciado, y las exporta a archivos planos:
 
 | Archivo exportado | Contenido |
 |---|---|
 | [`data/exportaciones/reporte_estadisticas_*.txt`](data/exportaciones) | Reporte de todas las estadísticas, igual al que se ve en pantalla |
-| [`data/exportaciones/base_consolidada_pqrs.csv`](data/exportaciones/base_consolidada_pqrs.csv) | Las 12.000 PQRS en una tabla de 20 columnas, sin datos personales: fuente del tablero |
+| [`data/exportaciones/base_consolidada_pqrs.csv`](data/exportaciones/base_consolidada_pqrs.csv) | Las 12.000 PQRS en una tabla de 20 columnas con los campos calculados, sin datos personales del solicitante |
 
-El tablero de Power BI tiene 4 páginas: resumen y tiempos, demanda del servicio, gestión y plazos, y solicitantes y operación. Se construye con el kit de [`docs/powerbi/`](docs/powerbi), que incluye el tema de colores, la consulta de datos, las medidas DAX y los valores de control, siguiendo la [guía de Power BI](docs/08_guia_power_bi.md).
-
-![Diseño de las páginas del tablero](images/powerbi_diseno_paginas.png)
 
 ## 10. Manual de usuario
 
@@ -186,8 +183,7 @@ La sustentación es en la semana 16 (18 de noviembre de 2026). Cada integrante t
 | Preparación | Dónde |
 |---|---|
 | Ejecutar el programa desde una copia recién descargada del repositorio | [Cómo ejecutar el programa](#cómo-ejecutar-el-programa) |
-| Repasar la arquitectura, los algoritmos y las 13 preguntas de repaso | [docs/05_algoritmo.md](docs/05_algoritmo.md) |
-| Comprobar las cifras del tablero de Power BI | [docs/powerbi/valores_control.md](docs/powerbi/valores_control.md) |
+| Repasar la arquitectura, los algoritmos y las 15 preguntas de repaso | [docs/05_algoritmo.md](docs/05_algoritmo.md) |
 | Explicar las decisiones abiertas con el PO (perfil derivado, fechas de solución) | [Supuestos y preguntas](docs/02_especificacion_requisitos.md#8-supuestos-y-preguntas-para-el-product-owner) |
 
 Cada integrante debe poder explicar cualquier módulo del código, no solo el que desarrolló.
@@ -198,7 +194,7 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
 |---|---|---|
 | Entrega 1 | 30 de septiembre de 2026 (semana 9) | Puntos 1 a 7, actas, documento de arquitectura ([docs/entrega1](docs/entrega1)) |
 | Programa completo al docente | 11 de noviembre de 2026 | Versión 2.0.0 del software en este repositorio |
-| Entrega 2 y sustentación | 18 de noviembre de 2026 (semana 16) | Todo lo descrito en el enunciado: puntos 1 a 13 y tablero de Power BI |
+| Entrega 2 y sustentación | 18 de noviembre de 2026 (semana 16) | Todo lo descrito en el enunciado: puntos 1 a 13 |
 
 ---
 
@@ -208,6 +204,7 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
 /
 ├── README.md
 ├── LICENSE.md
+├── requirements.txt              # Librerías: numpy y pandas
 ├── src/                          # Código fuente Python
 │   ├── main.py                   # Punto de entrada y menú principal
 │   ├── config.py                 # Rutas, catálogos y reglas de negocio
@@ -217,7 +214,7 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
 │   ├── registro.py               # Opción 1: registrar PQRS
 │   ├── consultas.py              # Opción 2: consultar PQRS
 │   ├── cambios.py                # Opción 3: cambio de estado
-│   ├── reportes.py               # Opción 4: estadísticas y Power BI
+│   ├── reportes.py               # Opción 4: estadísticas (Pandas y NumPy)
 │   ├── archivos.py               # Lectura/escritura de los archivos planos
 │   └── radicado.py               # Comprobante de 120 columnas
 ├── docs/                         # Documentación
@@ -228,12 +225,10 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
 │   ├── 05_algoritmo.md
 │   ├── 06_manual_usuario.md
 │   ├── 07_guia_github.md
-│   ├── 08_guia_power_bi.md
 │   ├── ejemplo_radicado.txt
 │   ├── actas/                    # Actas del equipo (Markdown y Word)
-│   ├── entrega1/                 # Documento de la primera entrega y Gantt en Excel
-│   └── powerbi/                  # Kit del tablero: tema, consulta, medidas DAX y valores de control
-├── images/                       # Logo, diagramas, diseño del tablero y capturas del manual
+│   └── entrega1/                 # Documento de la primera entrega y Gantt en Excel
+├── images/                       # Logo, diagramas y capturas del manual
 └── data/                         # Archivos planos del programa
     ├── Peticion.txt
     ├── Queja.txt
@@ -242,7 +237,7 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
     ├── Usuarios.txt
     ├── Historial.txt             # Bitácora de cambios de estado
     ├── radicados/                # Radicados y comprobantes generados
-    └── exportaciones/            # Reporte de estadísticas (TXT) y base consolidada (CSV) para Power BI
+    └── exportaciones/            # Reporte de estadísticas (TXT) y base consolidada (CSV)
 ```
 
 ## Cómo ejecutar el programa

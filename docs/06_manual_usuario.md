@@ -101,7 +101,7 @@ Al ingresar, su nombre, usuario y rol aparecen en el encabezado de todas las pan
 | **1. Registrar PQRS** | Radicar una nueva petición, queja, reclamo o sugerencia |
 | **2. Consultar PQRS** | Buscar una PQRS, ver el estado general y los listados de seguimiento |
 | **3. Registrar Cambio en PQRS** | Avanzar el estado de una PQRS |
-| **4. Estadísticas** | Ver y exportar las estadísticas y la base para Power BI |
+| **4. Estadísticas** | Ver y exportar las estadísticas y la base consolidada |
 | **5. Salir** | Cerrar la sesión (el programa pide confirmación) |
 
 Digite el número de la opción y presione Enter. Si digita algo diferente, el programa se lo vuelve a pedir.
@@ -183,7 +183,7 @@ El programa actualiza la PQRS, registra el cambio en `data/Historial.txt` y gene
 |---|---|
 | **1. Ver estadísticas en pantalla** | Reporte completo en la consola |
 | **2. Exportar reporte de estadísticas (TXT)** | El mismo reporte en `data/exportaciones/reporte_estadisticas_AAAAMMDD_HHMMSS.txt` |
-| **3. Exportar base consolidada para Power BI (CSV)** | Las cuatro bases unidas, con columnas calculadas, en `data/exportaciones/base_consolidada_pqrs.csv` |
+| **3. Exportar base consolidada de PQRS (CSV)** | Las cuatro bases unidas, con columnas calculadas, en `data/exportaciones/base_consolidada_pqrs.csv` |
 
 **Contenido del reporte**
 
@@ -198,7 +198,7 @@ El programa actualiza la PQRS, registra el cambio en `data/Historial.txt` y gene
 | 6 | Perfil del solicitante y carga operativa | Perfil derivado (Comunidad UdeA, Ciudadano externo u Organización), y PQRS registradas por rol y por usuario |
 | — | Complementarias | Cantidad por tipo de PQRS y por tipo de documento del solicitante |
 
-La base para Power BI **no incluye** nombres, documentos, teléfonos, correos, direcciones ni descripciones, para proteger los datos personales de los solicitantes. La construcción del tablero se explica en la [guía de Power BI](08_guia_power_bi.md).
+La base consolidada **no incluye** nombres, documentos, teléfonos, correos, direcciones ni descripciones, para proteger los datos personales de los solicitantes. Se puede abrir en Excel para hacer análisis adicionales.
 
 ## 10. Archivos que genera el programa
 
@@ -207,7 +207,7 @@ La base para Power BI **no incluye** nombres, documentos, teléfonos, correos, d
 | `data/Peticion.txt`, `Queja.txt`, `Reclamo.txt`, `Sugerencia.txt` | Bases de datos de PQRS | **No.** Son la información del sistema. |
 | `data/Historial.txt` | Todos los cambios de estado | **No.** Sin él se pierde el cálculo del promedio de respuesta. |
 | `data/radicados/` | Radicados y comprobantes de cambio | Sí, se pueden archivar; no afectan los datos. |
-| `data/exportaciones/` | Reportes y base para Power BI | Sí, se regeneran desde el menú de estadísticas. |
+| `data/exportaciones/` | Reporte de estadísticas y base consolidada | Sí, se regeneran desde el menú de estadísticas. |
 
 > **No edite los archivos de `data/` a mano** con Excel o el Bloc de notas: un separador `|` de más o de menos daña el registro. Si una línea está dañada, el programa la omite y muestra un aviso con el número de línea. Haga una copia de la carpeta `data/` antes de cualquier cambio masivo.
 

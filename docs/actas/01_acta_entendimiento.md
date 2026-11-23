@@ -26,7 +26,7 @@ Los integrantes declaran comprender y aceptar en su totalidad los requerimientos
 - Gestión de Peticiones, Quejas, Reclamos y Sugerencias en cuatro archivos planos independientes (`Peticion.txt`, `Queja.txt`, `Reclamo.txt` y `Sugerencia.txt`), con un consecutivo propio por archivo que continúa la numeración de las bases entregadas.
 - Validaciones estrictas de los datos de entrada (nombres, documentos, teléfonos, correos, fechas, entre otros).
 - Flujo de estados de cada solicitud: Registrada → En proceso → Solucionada.
-- Generación de radicados en formato TXT de 120 caracteres, reportes estadísticos y un tablero interactivo en Power BI de mínimo tres páginas.
+- Generación de radicados en formato TXT de 120 caracteres, reportes estadísticos y exportación de resultados a archivos planos.
 - Entrega en un repositorio de GitHub con las carpetas `src`, `docs`, `images` y `data`.
 
 ## 4. Expectativas de cada integrante
@@ -35,7 +35,7 @@ Los integrantes declaran comprender y aceptar en su totalidad los requerimientos
 |---|---|
 | ANUAR FERNEY CALDON QUIRA | Coordinar al equipo para cumplir cada entrega a tiempo, fortalecer el manejo de Python y GitHub, y obtener una calificación sobresaliente. |
 | SANTIAGO DOMINGUEZ PADILLA | Fortalecer la lógica de programación y las habilidades de pruebas de software, aplicándolas en un sistema funcional. |
-| SANDRA YULIETH SALCEDO SALAZAR | Desarrollar habilidades en el manejo de archivos de datos, el análisis de información y la construcción de tableros en Power BI. |
+| SANDRA YULIETH SALCEDO SALAZAR | Desarrollar habilidades en el manejo de archivos de datos, el análisis de información y la generación de reportes estadísticos. |
 
 ## 5. Compromisos académicos
 

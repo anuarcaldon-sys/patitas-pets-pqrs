@@ -33,15 +33,31 @@ Complementarias: cantidad por tipo de PQRS y por tipo de documento del solicitan
     vez que se registra un cambio de estado. Las PQRS de la base histórica
     que ya venían solucionadas no tienen fecha de solución, por eso no
     entran en el promedio; el reporte informa cuántas quedan por fuera.
+
+¿Qué hace Pandas y qué hace NumPy aquí?
+    - Las PQRS de los cuatro archivos se cargan en un DataFrame de Pandas
+      (una tabla con una fila por PQRS y una columna por campo).
+    - Cada estadística se obtiene de una columna (una Series) con value_counts().
+    - NumPy calcula los promedios (np.mean, np.round) y clasifica cada PQRS en
+      una sola operación sobre toda la columna (np.select, np.where).
+    Las funciones que trabajan con UNA sola PQRS (es_activa, dias_para_vencer,
+    clasificar_plazo...) siguen en Python puro porque las usa consultas.py.
+
+Instalación de las librerías:  pip install -r requirements.txt
 """
 
-from collections import Counter
 from datetime import datetime, timedelta
+
+try:
+    import numpy as np
+    import pandas as pd
+except ImportError:                      # mensaje claro si faltan las librerías
+    raise SystemExit("\n[ERROR] Faltan las librerías NumPy y Pandas.\n"
+                     "        Instálelas con:  pip install -r requirements.txt\n")
 
 import config
 import archivos
 import autenticacion
-from radicado import numero_radicado
 
 ETIQUETA_SOLUCIONADA = "Solucionada"
 ETIQUETA_VENCIDA = "Vencida"
@@ -120,16 +136,19 @@ def clasificar_plazo(registro, ahora):
     return ETIQUETA_AL_DIA
 
 
-def conteo(registros, obtener_valor, orden=None):
+def conteo(serie, orden=None):
     """
-    Cuenta cuántos registros hay por cada valor.
+    Cuenta cuántas PQRS hay por cada valor de una columna (Series de Pandas).
     Devuelve una lista de tuplas (valor, cantidad, porcentaje).
-    orden: lista opcional con el orden en que se deben mostrar los valores.
+    orden: lista opcional con el orden en que se deben mostrar los valores;
+    sin orden, se muestran de mayor a menor cantidad.
     """
-    contador = Counter(obtener_valor(r) for r in registros)
-    total = len(registros)
-    valores = orden if orden else [valor for valor, _ in contador.most_common()]
-    return [(valor, contador[valor], porcentaje(contador[valor], total)) for valor in valores]
+    cantidades = serie.value_counts()                      # Series: valor -> cantidad
+    if orden:
+        cantidades = cantidades.reindex(orden, fill_value=0)
+    total = len(serie)
+    return [(valor, int(cantidad), porcentaje(int(cantidad), total))
+            for valor, cantidad in cantidades.items()]
 
 
 # ---------------------------------------------------------------------------
@@ -154,47 +173,106 @@ def por_clasificacion_de_plazo(registros, etiqueta, ahora):
 
 
 # ---------------------------------------------------------------------------
+# Tabla de PQRS con Pandas
+# ---------------------------------------------------------------------------
+def tabla_pqrs(registros, ahora=None):
+    """
+    Convierte la lista de PQRS en un DataFrame y le agrega las columnas
+    calculadas que usan las estadísticas y la base para Power BI.
+    """
+    ahora = pd.Timestamp(ahora or datetime.now())
+    df = pd.DataFrame(registros, columns=config.CAMPOS)
+
+    # Fechas de texto a datetime de Pandas (una sola operación por columna)
+    df["radicacion_dt"] = pd.to_datetime(df["fecha_radicacion"], format=config.FORMATO_FECHA)
+    df["maxima_dt"] = pd.to_datetime(df["fecha_maxima_respuesta"], format=config.FORMATO_FECHA)
+
+    # Nombres legibles del tipo de PQRS y del tipo de documento
+    df["tipo_nombre"] = df["tipo_solicitud"].map(
+        {clave: datos["nombre"] for clave, datos in config.TIPOS_SOLICITUD.items()})
+    df["documento_nombre"] = df["tipo_documento"] + " - " + \
+        df["tipo_documento"].map(config.TIPOS_DOCUMENTO).fillna("Otro")
+
+    # Perfil derivado (estadística 6) con np.select: la primera condición que se cumple gana
+    dominio = df["correo_electronico"].str.rsplit("@", n=1).str[-1].str.lower()
+    df["perfil_solicitante"] = np.select(
+        [df["tipo_documento"] == "NIT", dominio == config.DOMINIO_INSTITUCIONAL],
+        [config.PERFIL_ORGANIZACION, config.PERFIL_COMUNIDAD_UDEA],
+        default=config.PERFIL_EXTERNO)
+
+    # Nombre y rol del usuario registrador
+    usuarios = pd.DataFrame(autenticacion.cargar_usuarios()).set_index("usuario")
+    df["nombre_registrador"] = df["usuario_registro"].map(usuarios["nombre_completo"]).fillna("")
+    df["rol_registrador"] = df["usuario_registro"].map(usuarios["rol"]).fillna("Sin rol")
+
+    # Fecha de solución (de Historial.txt) y días de respuesta
+    soluciones = fechas_de_solucion()
+    claves = list(zip(df["tipo_solicitud"], df["id"]))     # tuplas (tipo, id)
+    df["solucion_dt"] = pd.to_datetime(pd.Series([soluciones.get(c) for c in claves], index=df.index))
+    df.loc[df["estado_peticion"] != "Solucionada", "solucion_dt"] = pd.NaT
+    df["dias_respuesta"] = (df["solucion_dt"] - df["radicacion_dt"]).dt.days.astype("Int64")
+
+    # Plazos
+    df["activa"] = df["estado_peticion"].isin(config.ESTADOS_ACTIVOS)
+    df["plazo_otorgado"] = (df["maxima_dt"] - df["radicacion_dt"]).dt.days
+    df["antiguedad_dias"] = (ahora - df["radicacion_dt"]).dt.days
+    dias_vencer = (df["maxima_dt"].dt.normalize() - ahora.normalize()).dt.days
+    df["dias_para_vencer"] = dias_vencer.where(df["activa"]).astype("Int64")
+    restante = df["maxima_dt"] - ahora
+    df["estado_plazo"] = np.select(
+        [~df["activa"], restante < pd.Timedelta(0),
+         restante < pd.Timedelta(days=config.DIAS_ALERTA_VENCIMIENTO)],
+        [ETIQUETA_SOLUCIONADA, ETIQUETA_VENCIDA, ETIQUETA_PROXIMA],
+        default=ETIQUETA_AL_DIA)
+    return df
+
+
+def promedio_entero(serie):
+    """Promedio redondeado a entero con NumPy; None si la Series está vacía."""
+    valores = serie.dropna().to_numpy(dtype=float)
+    return int(np.round(np.mean(valores))) if valores.size else None
+
+
+# ---------------------------------------------------------------------------
 # Cálculo de todas las estadísticas
 # ---------------------------------------------------------------------------
 def calcular_estadisticas(registros, ahora=None):
     """Calcula todas las estadísticas y las devuelve en un diccionario."""
     ahora = ahora or datetime.now()
-    total = len(registros)
-    soluciones = fechas_de_solucion()
-    activas = registros_activos(registros)
-    roles = {u["usuario"]: u["rol"] for u in autenticacion.cargar_usuarios()}
-
-    # 0. Estadística obligatoria: promedio de días de respuesta
-    dias = [d for d in (dias_de_respuesta(r, soluciones) for r in registros) if d is not None]
-    solucionadas = [r for r in registros if r["estado_peticion"] == "Solucionada"]
-    plazos = [(a_fecha(r["fecha_maxima_respuesta"]) - a_fecha(r["fecha_radicacion"])).days
-              for r in registros]
-    antiguedades = [(ahora - a_fecha(r["fecha_radicacion"])).days for r in activas]
+    df = tabla_pqrs(registros, ahora)
+    activas = df[df["activa"]]                              # filtro booleano del DataFrame
+    solucionadas = int((df["estado_peticion"] == "Solucionada").sum())
+    muestras = int(df["dias_respuesta"].notna().sum())
 
     return {
         "ahora": ahora,
-        "total": total,
-        "promedio_respuesta": round(sum(dias) / len(dias)) if dias else None,
-        "muestras_respuesta": len(dias),
-        "solucionadas_sin_fecha": len(solucionadas) - len(dias),
-        "plazo_promedio": round(sum(plazos) / len(plazos)) if plazos else 0,
-        "antiguedad_activas": round(sum(antiguedades) / len(antiguedades)) if antiguedades else 0,
-        "por_tipo": conteo(registros,
-                           lambda r: config.TIPOS_SOLICITUD[r["tipo_solicitud"]]["nombre"]),
-        "por_tipo_documento": conteo(
-            registros, lambda r: f"{r['tipo_documento']} - {config.TIPOS_DOCUMENTO.get(r['tipo_documento'], 'Otro')}",
-            [f"{codigo} - {nombre}" for codigo, nombre in config.TIPOS_DOCUMENTO.items()]),
-        "por_mascota": conteo(registros, lambda r: r["tipo_mascota"], config.TIPOS_MASCOTA),
-        "por_canal": conteo(registros, lambda r: r["canal_recepcion"]),
-        "por_campus": conteo(registros, lambda r: r["campus_relacionado"]),
-        "por_estado": conteo(registros, lambda r: r["estado_peticion"], config.ESTADOS),
-        "tasa_resolucion": porcentaje(len(solucionadas), total),
-        "por_plazo_activas": conteo(activas, lambda r: clasificar_plazo(r, ahora),
+        "total": len(df),
+        # 0. Estadística obligatoria: promedio de días de respuesta
+        "promedio_respuesta": promedio_entero(df["dias_respuesta"]),
+        "muestras_respuesta": muestras,
+        "solucionadas_sin_fecha": solucionadas - muestras,
+        "plazo_promedio": promedio_entero(df["plazo_otorgado"]) or 0,
+        "antiguedad_activas": promedio_entero(activas["antiguedad_dias"]) or 0,
+        # Complementarias
+        "por_tipo": conteo(df["tipo_nombre"],
+                           [datos["nombre"] for datos in config.TIPOS_SOLICITUD.values()]),
+        "por_tipo_documento": conteo(df["documento_nombre"],
+                                     [f"{codigo} - {nombre}" for codigo, nombre in config.TIPOS_DOCUMENTO.items()]),
+        # 1 a 3. Demanda del servicio
+        "por_mascota": conteo(df["tipo_mascota"], config.TIPOS_MASCOTA),
+        "por_canal": conteo(df["canal_recepcion"]),
+        "por_campus": conteo(df["campus_relacionado"]),
+        # 4. Efectividad y resolución
+        "por_estado": conteo(df["estado_peticion"], config.ESTADOS),
+        "tasa_resolucion": porcentaje(solucionadas, len(df)),
+        # 5. Vencimiento
+        "por_plazo_activas": conteo(activas["estado_plazo"],
                                     [ETIQUETA_VENCIDA, ETIQUETA_PROXIMA, ETIQUETA_AL_DIA]),
         "total_activas": len(activas),
-        "por_perfil": conteo(registros, perfil_solicitante, config.PERFILES),
-        "por_rol": conteo(registros, lambda r: roles.get(r["usuario_registro"], "Sin rol")),
-        "por_usuario": conteo(registros, lambda r: r["usuario_registro"]),
+        # 6. Perfil y carga operativa
+        "por_perfil": conteo(df["perfil_solicitante"], config.PERFILES),
+        "por_rol": conteo(df["rol_registrador"]),
+        "por_usuario": conteo(df["usuario_registro"]),
     }
 
 
@@ -275,42 +353,17 @@ COLUMNAS_POWER_BI = [
 
 def base_consolidada(registros, ahora=None):
     """
-    Une las cuatro bases en una sola tabla con columnas calculadas.
+    Une las cuatro bases en un solo DataFrame con columnas calculadas.
     Por protección de datos personales (Ley 1581 de 2012) NO se exportan
     nombre, número de documento, teléfono, correo, dirección ni descripción;
     del correo solo se exporta el perfil derivado.
     """
-    ahora = ahora or datetime.now()
-    soluciones = fechas_de_solucion()
-    usuarios = {u["usuario"]: u for u in autenticacion.cargar_usuarios()}
-    filas = []
-    for r in registros:
-        usuario = usuarios.get(r["usuario_registro"], {})
-        fecha_solucion = soluciones.get((r["tipo_solicitud"], r["id"]))
-        dias = dias_de_respuesta(r, soluciones)
-        filas.append({
-            "radicado": numero_radicado(r),
-            "tipo_solicitud": config.TIPOS_SOLICITUD[r["tipo_solicitud"]]["nombre"],
-            "id": r["id"],
-            "tipo_documento": r["tipo_documento"],
-            "perfil_solicitante": perfil_solicitante(r),
-            "fecha_radicacion": r["fecha_radicacion"],
-            "canal_recepcion": r["canal_recepcion"],
-            "asunto_titulo": r["asunto_titulo"],
-            "tipo_mascota": r["tipo_mascota"],
-            "campus_relacionado": r["campus_relacionado"],
-            "fecha_maxima_respuesta": r["fecha_maxima_respuesta"],
-            "estado_peticion": r["estado_peticion"],
-            "usuario_registro": r["usuario_registro"],
-            "nombre_registrador": usuario.get("nombre_completo", ""),
-            "rol_registrador": usuario.get("rol", ""),
-            "fecha_solucion": fecha_solucion.strftime(config.FORMATO_FECHA) if fecha_solucion else "",
-            "dias_respuesta": "" if dias is None else dias,
-            "antiguedad_dias": (ahora - a_fecha(r["fecha_radicacion"])).days,
-            "dias_para_vencer": dias_para_vencer(r, ahora) if es_activa(r) else "",
-            "estado_plazo": clasificar_plazo(r, ahora),
-        })
-    return filas
+    df = tabla_pqrs(registros, ahora)
+    prefijos = {clave: datos["prefijo"] for clave, datos in config.TIPOS_SOLICITUD.items()}
+    df["radicado"] = df["tipo_solicitud"].map(prefijos) + "-" + df["id"].str.zfill(6)
+    df["tipo_solicitud"] = df["tipo_nombre"]
+    df["fecha_solucion"] = df["solucion_dt"].dt.strftime(config.FORMATO_FECHA).fillna("")
+    return df[COLUMNAS_POWER_BI]
 
 
 def exportar_reporte_texto(texto):
@@ -321,5 +374,8 @@ def exportar_reporte_texto(texto):
 
 def exportar_base_power_bi(registros):
     """Guarda la base consolidada en data/exportaciones/base_consolidada_pqrs.csv."""
-    return archivos.exportar_csv("base_consolidada_pqrs.csv", COLUMNAS_POWER_BI,
-                                 base_consolidada(registros))
+    config.CARPETA_EXPORTACIONES.mkdir(parents=True, exist_ok=True)
+    ruta = config.CARPETA_EXPORTACIONES / "base_consolidada_pqrs.csv"
+    # UTF-8 con BOM para que Excel y Power BI reconozcan las tildes
+    base_consolidada(registros).to_csv(ruta, index=False, encoding="utf-8-sig", lineterminator="\n")
+    return ruta

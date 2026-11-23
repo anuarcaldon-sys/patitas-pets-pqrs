@@ -30,7 +30,7 @@ Este manual explica paso a paso cómo instalar y usar PATITAS-PETS para registra
 |---|---|
 | Sistema operativo | Windows 10/11, macOS o Linux |
 | Python | Versión 3.10 o superior ([descarga](https://www.python.org/downloads/)). En Windows, marque la casilla **Add Python to PATH** durante la instalación. |
-| Librerías adicionales | Ninguna |
+| Librerías adicionales | NumPy y Pandas (se instalan en el paso 3 de la instalación) |
 | Pantalla | Consola de al menos 120 columnas de ancho para ver el radicado completo |
 | Usuario | Un usuario **activo** registrado en `data/Usuarios.txt` |
 
@@ -41,13 +41,19 @@ Este manual explica paso a paso cómo instalar y usar PATITAS-PETS para registra
    - **Windows:** abra la carpeta en el Explorador, escriba `cmd` en la barra de direcciones y presione Enter.
    - **macOS / Linux:** abra la Terminal y use `cd` hasta la carpeta del proyecto.
    - **Visual Studio Code:** menú **Archivo → Abrir carpeta** y luego **Terminal → Nueva terminal**.
-3. Ejecute el programa:
+3. Instale las librerías (solo la primera vez):
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Ejecute el programa:
 
    ```bash
    python src/main.py
    ```
 
-   En macOS y Linux puede ser necesario escribir `python3` en lugar de `python`.
+   En macOS y Linux puede ser necesario escribir `python3` y `pip3` en lugar de `python` y `pip`.
 
 > **Consejo:** maximice la ventana de la consola antes de empezar, para que el radicado de 120 columnas se vea completo.
 
@@ -225,6 +231,7 @@ Los usuarios autorizados se administran en `data/Usuarios.txt` (una línea por u
 
 | Situación | Causa probable | Solución |
 |---|---|---|
+| "Faltan las librerías NumPy y Pandas" al iniciar | No se instalaron las librerías | Ejecute `pip install -r requirements.txt` desde la carpeta del proyecto |
 | `python` no se reconoce como comando | Python no está instalado o no está en el PATH | Reinstale Python marcando **Add Python to PATH**, o use `py src/main.py` en Windows |
 | `[ERROR] No se encontró ...Usuarios.txt` | Falta la carpeta `data/` o el archivo de usuarios | Verifique que exista `data/Usuarios.txt` dentro de la carpeta del proyecto |
 | "Usuario o clave incorrectos" | Error de digitación o usuario inactivo | Revise mayúsculas de la clave; confirme el estado en `Usuarios.txt` |

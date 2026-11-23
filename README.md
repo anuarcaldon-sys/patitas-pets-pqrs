@@ -129,7 +129,7 @@ Versionado semántico (`MAYOR.MENOR.PARCHE`) con 13 versiones, desde la `v0.1.0`
 
 ## 9. Algoritmo
 
-Todo el código está en la carpeta [`src/`](src): 11 módulos en Python que usan solo la biblioteca estándar.
+Todo el código está en la carpeta [`src/`](src): 11 módulos en Python. Las estadísticas (`reportes.py`) usan **Pandas** (DataFrame y Series) y **NumPy**; el resto del programa usa la biblioteca estándar: diccionarios, listas, tuplas, condicionales y ciclos.
 
 | Módulo | Responsabilidad |
 |---|---|
@@ -247,11 +247,12 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
 
 ## Cómo ejecutar el programa
 
-**Requisitos:** Python 3.10 o superior. No se necesitan librerías externas.
+**Requisitos:** Python 3.10 o superior, con NumPy y Pandas.
 
 ```bash
 git clone https://github.com/anuarcaldon-sys/patitas-pets-pqrs.git
 cd patitas-pets-pqrs
+pip install -r requirements.txt
 python src/main.py
 ```
 

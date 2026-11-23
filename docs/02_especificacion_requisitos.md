@@ -104,7 +104,7 @@
 | RNF-06 | Integridad | Los textos no pueden contener el carácter `\|`, reservado como separador de columnas. |
 | RNF-07 | Fiabilidad | Un archivo de datos con líneas dañadas no detiene el programa; `Ctrl + C` cierra el programa de forma ordenada. |
 | RNF-08 | Rendimiento | Registrar o consultar una PQRS debe tardar menos de 2 segundos con los 12.000 registros actuales. |
-| RNF-09 | Compatibilidad | Python 3.10 o superior, sin librerías externas; Windows, Linux y macOS. Archivos en UTF-8 con saltos de línea LF. |
+| RNF-09 | Compatibilidad | Python 3.10 o superior, con NumPy y Pandas (`requirements.txt`); Windows, Linux y macOS. Archivos en UTF-8 con saltos de línea LF. |
 | RNF-10 | Portabilidad | Las rutas se calculan a partir de la ubicación del código, por lo que el programa funciona desde cualquier carpeta. |
 | RNF-11 | Mantenibilidad | Código modular (sección 7) y reglas de negocio centralizadas en `config.py`; comentarios y nombres en español. |
 | RNF-12 | Legal | Los datos personales de los solicitantes se tratan conforme a la Ley 1581 de 2012 (protección de datos personales): uso exclusivo para gestionar la PQRS. |

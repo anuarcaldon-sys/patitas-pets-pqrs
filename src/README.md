@@ -1,6 +1,6 @@
 # src — Código fuente de PATITAS-PETS
 
-Programa de consola en Python 3.10+ (solo biblioteca estándar). Se ejecuta desde la raíz del repositorio:
+Programa de consola en Python 3.10+. Las estadísticas usan NumPy y Pandas (`pip install -r requirements.txt`). Se ejecuta desde la raíz del repositorio:
 
 ```bash
 python src/main.py          # inicia el programa

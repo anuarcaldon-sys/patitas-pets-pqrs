@@ -12,6 +12,7 @@
 
 <p align="center">
   <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es"><img src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png" alt="Licencia CC BY-NC-SA 4.0"></a>
+  <a href="https://colab.research.google.com/github/anuarcaldon-sys/patitas-pets-pqrs/blob/main/PATITAS_PETS_Colab.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Abrir en Colab"></a>
 </p>
 
 > **Estado actual:** versión 2.0.0 del software. Incluye autenticación, registro validado de PQRS, consecutivos independientes por archivo que continúan la numeración de las bases de MEPEGA, radicado de 120 columnas, consultas, cambios de estado con historial, estadísticas con Pandas y NumPy, y exportación de resultados a archivos planos.
@@ -205,6 +206,7 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
 ├── README.md
 ├── LICENSE.md
 ├── requirements.txt              # Librerías: numpy y pandas
+├── PATITAS_PETS_Colab.ipynb      # Cuaderno para ejecutar el programa en Google Colab
 ├── src/                          # Código fuente Python
 │   ├── main.py                   # Punto de entrada y menú principal
 │   ├── config.py                 # Rutas, catálogos y reglas de negocio
@@ -242,6 +244,14 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
 
 ## Cómo ejecutar el programa
 
+### En Google Colab (sin instalar nada)
+
+[![Abrir en Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/anuarcaldon-sys/patitas-pets-pqrs/blob/main/PATITAS_PETS_Colab.ipynb)
+
+Abra el cuaderno [`PATITAS_PETS_Colab.ipynb`](PATITAS_PETS_Colab.ipynb) con el botón y ejecute las celdas en orden: el Paso 1 descarga el código de este repositorio, el Paso 2 instala NumPy y Pandas y corre las pruebas, el Paso 3 abre el programa y el Paso 4 descarga los archivos generados.
+
+### En un computador o en GitHub Codespaces
+
 **Requisitos:** Python 3.10 o superior, con NumPy y Pandas.
 
 ```bash
@@ -251,6 +261,7 @@ pip install -r requirements.txt
 python src/main.py
 ```
 
+- En GitHub Codespaces (botón **Code → Codespaces → Create codespace on main**) el repositorio ya está abierto: basta con los dos últimos comandos en la terminal.
 - Ingrese con cualquier usuario activo de `data/Usuarios.txt`, ya sea con el nombre de usuario (por ejemplo, `admin_udea`) o con el correo institucional.
 - Para ejecutar las pruebas de las reglas de validación y del flujo de estados: `python src/validaciones.py`
 - Si la consola de su editor no muestra los asteriscos al escribir la clave, cambie `MOSTRAR_ASTERISCOS = False` en `src/config.py`.

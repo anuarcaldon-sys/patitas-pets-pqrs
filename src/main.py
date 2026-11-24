@@ -14,6 +14,7 @@ Flujo:
 
 import sys
 
+import config
 import interfaz
 import archivos
 import autenticacion
@@ -23,23 +24,52 @@ import cambios
 import reportes
 
 
+def mostrar_informe_limpieza():
+    """Opción 4 > 5: muestra qué corrigió la limpieza al leer los cuatro archivos."""
+    informe, total_lineas, validos = archivos.informe_limpieza()
+    print("\n  LECTURA Y LIMPIEZA DE LOS ARCHIVOS DE PQRS")
+    print("  " + "-" * 64)
+    for tipo, cantidad in validos.items():
+        print(f"  {config.TIPOS_SOLICITUD[tipo]['archivo'].name:<18} {cantidad:>7,} registros válidos".replace(",", "."))
+    print(f"  {'Total unificado':<18} {sum(validos.values()):>7,} de {total_lineas:,} líneas leídas"
+          .replace(",", "."))
+    print("  " + "-" * 64)
+    for tipo_correccion, cantidad in informe.items():
+        print(f"  {tipo_correccion:<52} {cantidad:>6}")
+    print("  " + "-" * 64)
+    print("  Reglas: espacios, mayúsculas/minúsculas, catálogos sin tildes, campos vacíos y fechas.")
+
+
 def menu_estadisticas(sesion):
-    """Opción 4: muestra y exporta las estadísticas calculadas en reportes.py."""
+    """Opción 4: estadísticas, exportaciones, gráficas y limpieza de datos."""
     while True:
         interfaz.mostrar_encabezado("4. ESTADÍSTICAS", sesion)
         print("      1. Ver estadísticas en pantalla")
         print("      2. Exportar reporte de estadísticas (TXT)")
         print("      3. Exportar base consolidada de PQRS (CSV)")
-        print("      4. Volver al menú principal\n")
-        opcion = interfaz.pedir_opcion("  Seleccione una opción (1-4): ", 1, 4)
-        if opcion == 4:
+        print("      4. Generar gráficas estadísticas (PNG con matplotlib)")
+        print("      5. Ver informe de lectura y limpieza de datos")
+        print("      6. Volver al menú principal\n")
+        opcion = interfaz.pedir_opcion("  Seleccione una opción (1-6): ", 1, 6)
+        if opcion == 6:
             return
 
         print("\n  Calculando, por favor espere...")
+        if opcion == 5:
+            mostrar_informe_limpieza()
+            interfaz.pausar()
+            continue
+
         todas = archivos.leer_todas()
         if opcion == 3:
             ruta = reportes.exportar_base_consolidada(todas)
             print(f"  [OK] Base consolidada exportada ({len(todas)} filas): {ruta}")
+        elif opcion == 4:
+            import graficas          # se importa aquí: matplotlib solo se carga si se usa
+            rutas = graficas.generar_graficas(todas)
+            print(f"  [OK] {len(rutas)} gráficas guardadas en: {rutas[0].parent}")
+            for ruta in rutas:
+                print(f"       - {ruta.name}")
         else:
             texto = reportes.texto_reporte(reportes.calcular_estadisticas(todas), sesion["usuario"])
             if opcion == 1:

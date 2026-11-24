@@ -1,6 +1,6 @@
 # Manual de usuario — PATITAS-PETS
 
-**Gestor de PQRS de MEPEGA · Versión 2.0.0**
+**Gestor de PQRS de MEPEGA · Versión 2.1.0**
 
 Este manual explica paso a paso cómo instalar y usar PATITAS-PETS para registrar, consultar, actualizar y analizar las peticiones, quejas, reclamos y sugerencias (PQRS) de MEPEGA.
 
@@ -30,7 +30,7 @@ Este manual explica paso a paso cómo instalar y usar PATITAS-PETS para registra
 |---|---|
 | Sistema operativo | Windows 10/11, macOS o Linux |
 | Python | Versión 3.10 o superior ([descarga](https://www.python.org/downloads/)). En Windows, marque la casilla **Add Python to PATH** durante la instalación. |
-| Librerías adicionales | NumPy y Pandas (se instalan en el paso 3 de la instalación) |
+| Librerías adicionales | NumPy, Pandas y matplotlib (se instalan en el paso 3 de la instalación) |
 | Pantalla | Consola de al menos 120 columnas de ancho para ver el radicado completo |
 | Usuario | Un usuario **activo** registrado en `data/Usuarios.txt` |
 
@@ -173,6 +173,8 @@ La columna **Días** indica cuántos días faltan para la fecha máxima; un núm
 
 El programa actualiza la PQRS, registra el cambio en `data/Historial.txt` y genera un comprobante en `data/radicados/` (por ejemplo, `PET-003001_En-proceso.txt`). Si la PQRS ya está **Solucionada**, el programa informa que no admite más cambios.
 
+Cuando el cambio es a **Solucionada**, el programa muestra además la **fecha de respuesta**, los **días transcurridos** desde la radicación, el plazo otorgado y si se respondió **dentro del plazo** o con cuántos días de retraso.
+
 > **Importante:** la fecha en que una PQRS pasa a **Solucionada** es la que se usa para calcular el promedio de días de respuesta. Registre cada solución en el momento en que se da.
 
 ## 9. Estadísticas
@@ -184,6 +186,9 @@ El programa actualiza la PQRS, registra el cambio en `data/Historial.txt` y gene
 | **1. Ver estadísticas en pantalla** | Reporte completo en la consola |
 | **2. Exportar reporte de estadísticas (TXT)** | El mismo reporte en `data/exportaciones/reporte_estadisticas_AAAAMMDD_HHMMSS.txt` |
 | **3. Exportar base consolidada de PQRS (CSV)** | Las cuatro bases unidas, con columnas calculadas, en `data/exportaciones/base_consolidada_pqrs.csv` |
+| **4. Generar gráficas estadísticas** | Siete gráficas PNG hechas con matplotlib en `data/exportaciones/graficas/`: tipo y estado, canal, mascota, campus, cumplimiento del plazo, usuario registrador y radicación mensual |
+| **5. Ver informe de lectura y limpieza de datos** | Registros válidos de cada archivo y cuántas correcciones hizo cada regla de limpieza (espacios, mayúsculas, catálogos, vacíos y fechas) |
+| **6. Volver al menú principal** | Regresa al menú principal |
 
 **Contenido del reporte**
 

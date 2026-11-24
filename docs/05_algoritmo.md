@@ -1,7 +1,7 @@
 # Algoritmo — PATITAS-PETS
 
 **Proyecto:** PATITAS-PETS · Gestor de PQRS de MEPEGA
-**Versión del software:** 2.0.0
+**Versión del software:** 2.1.0
 
 Todo el código del proyecto está en la carpeta [`src/`](../src). Este documento explica cómo está organizado, qué hace cada módulo y cómo funcionan los algoritmos principales. Está pensado también como guía de estudio para la sustentación.
 
@@ -11,25 +11,28 @@ Todo el código del proyecto está en la carpeta [`src/`](../src). Este document
 
 | Módulo | Líneas | Responsabilidad | Funciones principales |
 |---|---:|---|---|
-| `main.py` | 107 | Punto de entrada, menú principal y menú de estadísticas | `main`, `menu_principal`, `menu_estadisticas` |
+| `main.py` | 137 | Punto de entrada, menú principal y menú de estadísticas | `main`, `menu_principal`, `menu_estadisticas` |
 | `config.py` | 174 | Rutas, catálogos, estructura de datos y reglas de negocio | *(solo constantes)* |
 | `interfaz.py` | 131 | Banner, encabezados, lectura de opciones, tablas paginadas y lectura de la clave | `mostrar_encabezado`, `pedir_opcion`, `mostrar_tabla`, `leer_clave` |
 | `autenticacion.py` | 120 | Usuarios autorizados, credenciales, intentos, bloqueo y sesión | `iniciar_sesion`, `validar_credenciales`, `bloquear_pantalla` |
 | `validaciones.py` | 243 | Reglas de cada campo (nombre, documento, teléfono, correo, fechas, estado…) | `validar_nombre`, `validar_correo`, `validar_fecha_radicacion`, `validar_cambio_estado` |
 | `registro.py` | 181 | Opción 1: captura guiada y guardado de una PQRS | `registrar_pqrs`, `capturar_datos`, `pedir_texto`, `elegir` |
 | `consultas.py` | 182 | Opción 2: consultas y listados | `menu_consultas`, `buscar_por_radicado`, `ver_listado` |
-| `cambios.py` | 90 | Opción 3: cambio de estado | `registrar_cambio` |
+| `cambios.py` | 115 | Opción 3: cambio de estado y días transcurridos al solucionar | `registrar_cambio`, `resumen_respuesta` |
 | `reportes.py` | 381 | Opción 4: estadísticas con Pandas y NumPy, y exportación a archivos planos | `calcular_estadisticas`, `texto_reporte`, `base_consolidada` |
-| `archivos.py` | 208 | Lectura y escritura de todos los archivos planos | `leer_registros`, `siguiente_id`, `guardar_registro`, `actualizar_registro` |
+| `archivos.py` | 261 | Lectura, unión y escritura de los archivos planos | `leer_registros`, `leer_todas`, `siguiente_id`, `guardar_registro`, `actualizar_registro` |
+| `limpieza.py` | 199 | Limpieza y estandarización de cada PQRS al leer | `limpiar_registro`, `normalizar_fecha` |
+| `graficas.py` | 204 | Opción 4 → 4: gráficas con matplotlib | `generar_graficas` |
 | `radicado.py` | 141 | Comprobante de 120 columnas | `construir_radicado`, `numero_radicado` |
-| **Total** | **1.958** | | |
+| **Total** | **2.469** | | |
 
-El programa usa la biblioteca estándar de Python (`pathlib`, `datetime`, `re`, `csv`, `textwrap`, `unicodedata`, `getpass`, `time`, `os`) y dos librerías externas, instaladas con `pip install -r requirements.txt`:
+El programa usa la biblioteca estándar de Python (`pathlib`, `datetime`, `re`, `csv`, `textwrap`, `unicodedata`, `getpass`, `time`, `os`) y tres librerías externas, instaladas con `pip install -r requirements.txt`:
 
 | Librería | Dónde | Para qué |
 |---|---|---|
 | **Pandas** | `reportes.py` | Carga las 12.000 PQRS en un **DataFrame**; cada estadística sale de una columna (**Series**) con `value_counts()`; filtra activas con máscaras booleanas y exporta la base con `to_csv()` |
 | **NumPy** | `reportes.py` | Promedios con `np.mean` y `np.round`; clasifica toda una columna en una sola operación con `np.select` (perfil del solicitante y estado del plazo) |
+| **matplotlib** | `graficas.py` | Dibuja las siete gráficas (barras horizontales, apiladas y columnas) a partir del DataFrame de `reportes.tabla_pqrs` y las guarda en PNG |
 
 Estructuras de Python usadas en el resto del código: cada PQRS es un **diccionario**; los archivos se leen como **listas** de diccionarios; las validaciones devuelven **tuplas** `(es_valido, mensaje)`; los menús usan **ciclos** `while True` y **condicionales** `if/elif/else`.
 
@@ -133,7 +136,7 @@ La función de validación se recibe como parámetro, por eso la misma función 
 ### 4.3 Consecutivo independiente por archivo (`archivos.siguiente_id`)
 
 ```
-ids <- [entero(id) de cada registro del archivo del tipo]
+ids <- [entero(primer campo) de CADA línea del archivo del tipo]   (también las que la limpieza omite)
 retornar máximo(ids) + 1        (1 si el archivo está vacío)
 ```
 
@@ -172,6 +175,8 @@ flowchart TD
 
 **Actualización segura (`archivos.actualizar_registro`).** Se leen todas las líneas del archivo, se reemplaza solo la línea cuyo primer campo es el ID, se escribe todo en un archivo temporal `.tmp` y luego ese archivo reemplaza al original en un solo paso (`Path.replace`). Si el programa se interrumpe a mitad de la escritura, el archivo original no se daña.
 
+**Días transcurridos (`cambios.resumen_respuesta`).** Al pasar a Solucionada: días = fecha de respuesta − fecha de radicación; plazo = fecha máxima − fecha de radicación; la PQRS se respondió a tiempo si la fecha de respuesta no supera la fecha máxima. El programa muestra los tres datos y, si hubo retraso, cuántos días.
+
 ### 4.6 Plazos y promedio de días de respuesta (`reportes.py`)
 
 ```
@@ -203,6 +208,26 @@ SI NO                                             -> "Ciudadano externo"
 
 El orden importa: una organización con correo institucional se cuenta como organización. La regla está en una sola función y el dominio en `config.DOMINIO_INSTITUCIONAL`, de modo que si el PO aprueba un campo de perfil, solo cambia esa función.
 
+### 4.8 Lectura, unión y limpieza de los archivos (`archivos.leer_todas` y `limpieza.limpiar_registro`)
+
+```
+PARA cada tipo en [Peticion, Queja, Reclamo, Sugerencia]:
+    PARA cada línea del archivo (después del encabezado):
+        SI está en blanco: saltar
+        SI no tiene 18 campos: avisar y omitir
+        registro <- dict(zip(encabezado, campos))
+        limpiar: espacios -> mayúsculas/catálogos -> vacíos -> fechas
+        SI falta un campo obligatorio o la fecha es ilegible: avisar y omitir
+        agregar el registro limpio a la lista única
+retornar la lista con las PQRS de los cuatro archivos
+```
+
+Las reglas comparan los valores de catálogo sin mayúsculas ni tildes ("pagina web" → "Página web") y aceptan fechas en otros formatos conocidos (28/09/2026 17:44 → 2026-09-28 17:44:00). La opción 4 → 5 muestra cuántas correcciones hizo cada regla; con las bases entregadas por MEPEGA el resultado es 0 en todas, y `python src/limpieza.py` prueba las reglas con un registro sucio (11 de 11 pruebas).
+
+### 4.9 Gráficas (`graficas.generar_graficas`)
+
+Toma el DataFrame de `reportes.tabla_pqrs` (las 12.000 PQRS limpias con sus columnas calculadas), agrupa con `value_counts()` o `groupby()` y dibuja cada resultado con matplotlib. Las siete imágenes se guardan en `data/exportaciones/graficas/`.
+
 ## 5. Archivos que usa el programa
 
 | Archivo | Lectura | Escritura | Módulo |
@@ -213,6 +238,7 @@ El orden importa: una organización con correo institucional se cuenta como orga
 | `data/radicados/*.txt` | — | Radicado de registro y comprobante de cada cambio | `archivos.py`, `radicado.py` |
 | `data/exportaciones/reporte_estadisticas_*.txt` | — | Opción 4.2 | `reportes.py` |
 | `data/exportaciones/base_consolidada_pqrs.csv` | — | Opción 4.3 (base consolidada) | `reportes.py` |
+| `data/exportaciones/graficas/*.png` | — | Opción 4.4 (siete gráficas) | `graficas.py` |
 
 ## 6. Pruebas realizadas
 
@@ -232,6 +258,10 @@ El orden importa: una organización con correo institucional se cuenta como orga
 | 12 | Estadísticas y base consolidada con 12.001 registros | Cálculo en menos de 1 segundo; CSV de 12.001 filas y 20 columnas | ✅ |
 | 13 | Valores del reporte frente a un cálculo independiente con pandas sobre el CSV exportado | Todas las cifras coinciden | ✅ |
 | 14 | Estadísticas con Pandas y NumPy frente a la versión anterior en Python puro, en tres fechas distintas | Reporte y CSV idénticos carácter por carácter | ✅ |
+| 15 | Reglas de limpieza con un registro sucio (`python src/limpieza.py`) | 11 de 11 pruebas correctas | ✅ |
+| 16 | Lectura y limpieza de las cuatro bases entregadas (opción 4 → 5) | 12.000 registros válidos y 0 correcciones | ✅ |
+| 17 | SUG-002411 de En proceso a Solucionada | Muestra fecha de respuesta, 56 días transcurridos (plazo 30) y 26 días de retraso | ✅ |
+| 18 | Generación de gráficas (opción 4 → 4) | Siete PNG en data/exportaciones/graficas en menos de 2 segundos | ✅ |
 
 ## 7. Preguntas de repaso para la sustentación
 

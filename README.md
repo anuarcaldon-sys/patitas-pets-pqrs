@@ -15,7 +15,7 @@
   <a href="https://colab.research.google.com/github/anuarcaldon-sys/patitas-pets-pqrs/blob/main/PATITAS_PETS_Colab.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Abrir en Colab"></a>
 </p>
 
-> **Estado actual:** versión 2.0.0 del software. Incluye autenticación, registro validado de PQRS, consecutivos independientes por archivo que continúan la numeración de las bases de MEPEGA, radicado de 120 columnas, consultas, cambios de estado con historial, estadísticas con Pandas y NumPy, y exportación de resultados a archivos planos.
+> **Estado actual:** versión 2.1.0 del software. Incluye autenticación, registro validado de PQRS, lectura y limpieza de los cuatro archivos planos, consecutivos independientes por archivo que continúan la numeración de las bases de MEPEGA, radicado de 120 columnas, consultas, cambios de estado con historial y días transcurridos al solucionar, estadísticas con Pandas y NumPy, gráficas con matplotlib y exportación de resultados a archivos planos.
 
 ---
 
@@ -113,7 +113,7 @@ Requisitos funcionales y no funcionales, reglas de validación por campo, modelo
 |---|---|
 | Duración | 10 semanas (70 días): del 10 de septiembre al 18 de noviembre de 2026 |
 | Actividades | 45, en 7 fases |
-| Hitos | Entrega 1 (30/09) · entrega del programa (11/11) · sustentación y Entrega 2 (18/11) |
+| Hitos | Entrega 1 (30/09) · entrega del programa (11/11) · sustentación y Entrega 2 (26/11) |
 | Dedicación | 50 horas por integrante (150 horas en total) |
 | Valor de la hora de práctica | $8.337,64 (1 SMMLV 2026 = $1.750.905 ÷ 210 h) |
 | **Presupuesto total** | **$1.250.646 COP** en tiempo de práctica de formación |
@@ -122,7 +122,7 @@ Requisitos funcionales y no funcionales, reglas de validación por campo, modelo
 
 ## 8. Plan de versionado
 
-Versionado semántico (`MAYOR.MENOR.PARCHE`) con 13 versiones, desde la `v0.1.0` (día 10) hasta la `v2.0.1` (día 70, sustentación), cada una con su avance acumulado sobre el cronograma.
+Versionado semántico (`MAYOR.MENOR.PARCHE`) con 13 versiones, desde la `v0.1.0` (día 10) hasta la `v2.1.0` (día 76, ajustes para la sustentación), cada una con su avance acumulado sobre el cronograma.
 
 ![Avance por versión](images/avance_versiones.png)
 
@@ -179,7 +179,7 @@ Repositorio creado por el líder del proyecto con su cuenta institucional de la 
 
 ## 12. Sustentación
 
-La sustentación es en la semana 16 (18 de noviembre de 2026). Cada integrante tiene cinco minutos para responder las preguntas del docente con el programa funcionando. El programa completo se entrega una semana antes, el 11 de noviembre.
+La sustentación de la Entrega 2 es el 26 de noviembre de 2026: 10 minutos por equipo, 8 de exposición y demostración en vivo y 2 de preguntas del docente. Se presentan la lectura y limpieza de los datos, la demostración en consola (ingreso, consulta y cambio de estado con días transcurridos), las gráficas con su interpretación y las conclusiones técnicas.
 
 | Preparación | Dónde |
 |---|---|
@@ -195,7 +195,7 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
 |---|---|---|
 | Entrega 1 | 30 de septiembre de 2026 (semana 9) | Puntos 1 a 7, actas, documento de arquitectura ([docs/entrega1](docs/entrega1)) |
 | Programa completo al docente | 11 de noviembre de 2026 | Versión 2.0.0 del software en este repositorio |
-| Entrega 2 y sustentación | 18 de noviembre de 2026 (semana 16) | Todo lo descrito en el enunciado: puntos 1 a 13 |
+| Entrega 2 y sustentación | 26 de noviembre de 2026 | Versión 2.1.0: todo lo descrito en el enunciado (puntos 1 a 13) y el derrotero de la Entrega 2 |
 
 ---
 
@@ -205,7 +205,7 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
 /
 ├── README.md
 ├── LICENSE.md
-├── requirements.txt              # Librerías: numpy y pandas
+├── requirements.txt              # Librerías: numpy, pandas y matplotlib
 ├── PATITAS_PETS_Colab.ipynb      # Cuaderno para ejecutar el programa en Google Colab
 ├── src/                          # Código fuente Python
 │   ├── main.py                   # Punto de entrada y menú principal
@@ -217,6 +217,8 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
 │   ├── consultas.py              # Opción 2: consultar PQRS
 │   ├── cambios.py                # Opción 3: cambio de estado
 │   ├── reportes.py               # Opción 4: estadísticas (Pandas y NumPy)
+│   ├── graficas.py               # Opción 4: gráficas estadísticas (matplotlib)
+│   ├── limpieza.py               # Limpieza de los datos al leer los archivos
 │   ├── archivos.py               # Lectura/escritura de los archivos planos
 │   └── radicado.py               # Comprobante de 120 columnas
 ├── docs/                         # Documentación
@@ -248,11 +250,11 @@ Cada integrante debe poder explicar cualquier módulo del código, no solo el qu
 
 [![Abrir en Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/anuarcaldon-sys/patitas-pets-pqrs/blob/main/PATITAS_PETS_Colab.ipynb)
 
-Abra el cuaderno [`PATITAS_PETS_Colab.ipynb`](PATITAS_PETS_Colab.ipynb) con el botón y ejecute las celdas en orden: el Paso 1 descarga el código de este repositorio, el Paso 2 instala NumPy y Pandas y corre las pruebas, el Paso 3 abre el programa y el Paso 4 descarga los archivos generados.
+Abra el cuaderno [`PATITAS_PETS_Colab.ipynb`](PATITAS_PETS_Colab.ipynb) con el botón y ejecute las celdas en orden: el Paso 1 descarga el código de este repositorio, el Paso 2 instala NumPy, Pandas y matplotlib y corre las pruebas, el Paso 3 abre el programa y el Paso 4 muestra las gráficas y descarga los archivos generados.
 
 ### En un computador o en GitHub Codespaces
 
-**Requisitos:** Python 3.10 o superior, con NumPy y Pandas.
+**Requisitos:** Python 3.10 o superior, con NumPy, Pandas y matplotlib.
 
 ```bash
 git clone https://github.com/anuarcaldon-sys/patitas-pets-pqrs.git

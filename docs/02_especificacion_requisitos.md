@@ -1,7 +1,7 @@
 # Especificación de requisitos — PATITAS-PETS
 
 **Proyecto:** PATITAS-PETS · Gestor de PQRS de MEPEGA
-**Versión del documento:** 2.0 — Entrega 2 (actualizado con la versión 2.0.0 del software)
+**Versión del documento:** 2.1 — Entrega 2 (actualizado con la versión 2.1.0 del software)
 
 ---
 
@@ -90,6 +90,9 @@
 | RF-34 | El sistema debe permitir buscar todas las PQRS de un solicitante por su número de documento. | Debería | 2.0 | ✅ |
 | RF-35 | La base consolidada exportada en CSV debe incluir columnas calculadas (perfil del solicitante, días de respuesta, antigüedad, días para vencer, estado del plazo) y excluir los datos personales del solicitante. | Debe | 2.0 | ✅ |
 | RF-36 | El perfil del solicitante se deriva de los datos disponibles: NIT → Organización (NIT); correo `@udea.edu.co` → Comunidad UdeA; otro → Ciudadano externo. | Debe | 2.0 | ✅ |
+| RF-37 | Al leer los archivos planos, el sistema debe limpiar cada PQRS: quitar espacios sobrantes, estandarizar mayúsculas/minúsculas y valores de catálogo, completar la dirección vacía con N/A, convertir fechas al formato oficial y omitir con aviso los registros con campos obligatorios vacíos o fechas ilegibles. | Debe | 2.1 | ✅ |
+| RF-38 | Al pasar una PQRS a Solucionada, el sistema debe mostrar la fecha de respuesta, los días transcurridos desde la radicación y si se respondió dentro del plazo. | Debe | 2.1 | ✅ |
+| RF-39 | El sistema debe generar gráficas estadísticas con matplotlib (tipo y estado, canal, mascota, campus, cumplimiento del plazo, usuario registrador y radicación mensual) a partir de los datos limpios y unificados. | Debe | 2.1 | ✅ |
 
 ## 4. Requisitos no funcionales
 
@@ -103,7 +106,7 @@
 | RNF-06 | Integridad | Los textos no pueden contener el carácter `\|`, reservado como separador de columnas. |
 | RNF-07 | Fiabilidad | Un archivo de datos con líneas dañadas no detiene el programa; `Ctrl + C` cierra el programa de forma ordenada. |
 | RNF-08 | Rendimiento | Registrar o consultar una PQRS debe tardar menos de 2 segundos con los 12.000 registros actuales. |
-| RNF-09 | Compatibilidad | Python 3.10 o superior, con NumPy y Pandas (`requirements.txt`); Windows, Linux y macOS. Archivos en UTF-8 con saltos de línea LF. |
+| RNF-09 | Compatibilidad | Python 3.10 o superior, con NumPy, Pandas y matplotlib (`requirements.txt`); Windows, Linux y macOS. Archivos en UTF-8 con saltos de línea LF. |
 | RNF-10 | Portabilidad | Las rutas se calculan a partir de la ubicación del código, por lo que el programa funciona desde cualquier carpeta. |
 | RNF-11 | Mantenibilidad | Código modular (sección 7) y reglas de negocio centralizadas en `config.py`; comentarios y nombres en español. |
 | RNF-12 | Legal | Los datos personales de los solicitantes se tratan conforme a la Ley 1581 de 2012 (protección de datos personales): uso exclusivo para gestionar la PQRS. |
@@ -170,10 +173,12 @@ Cada línea de los archivos `Peticion.txt`, `Queja.txt`, `Reclamo.txt` y `Sugere
 | `validaciones.py` | Reglas de cada campo (correo, teléfono, fechas, nombres…) | RF-10, RF-11, RF-18, RNF-06 |
 | `registro.py` | Captura guiada, confirmación y guardado de la PQRS | RF-10 a RF-18 |
 | `archivos.py` | Lectura/escritura de los 4 archivos y consecutivos | RF-15, RF-19 a RF-22, RNF-05 |
+| `limpieza.py` | Limpieza y estandarización de los datos al leer | RF-37 |
 | `radicado.py` | Comprobante de 120 columnas | RF-23 a RF-26 |
 | `consultas.py` | Consultas y listados | RF-27, RF-29, RF-34 |
-| `cambios.py` | Cambio de estado, historial y comprobante | RF-28, RF-32, RF-33 |
+| `cambios.py` | Cambio de estado, historial, comprobante y días transcurridos | RF-28, RF-32, RF-33, RF-38 |
 | `reportes.py` | Estadísticas con Pandas y NumPy, reporte TXT y base consolidada CSV | RF-30, RF-31, RF-35, RF-36 |
+| `graficas.py` | Gráficas estadísticas con matplotlib | RF-39 |
 
 ## 8. Supuestos y preguntas para el Product Owner
 

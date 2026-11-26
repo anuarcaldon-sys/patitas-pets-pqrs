@@ -11,7 +11,7 @@ archivo y el resto del programa la toma automáticamente.
 
 from pathlib import Path
 
-VERSION = "2.0.0"   # esquema MAYOR.MENOR.PARCHE (ver docs/04_plan_versionado.md)
+VERSION = "2.1.0"   # esquema MAYOR.MENOR.PARCHE (ver docs/04_plan_versionado.md)
 
 # ---------------------------------------------------------------------------
 # Rutas

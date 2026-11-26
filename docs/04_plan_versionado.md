@@ -51,7 +51,7 @@ El **avance acumulado** es el porcentaje de los 141 días-actividad del cronogra
 | **v1.7.0** | 57 | 05-nov-2026 | | 83 % | Pruebas integrales terminadas y errores corregidos. |  |
 | **v1.8.0** | 61 | 09-nov-2026 | | 92 % | Documentación del desarrollo, plan de versionado y manual de usuario. |  |
 | **v2.0.0** | 63 | 11-nov-2026 | | 94 % | Programa completo entregado al docente, una semana antes de la sustentación. | Entrega del programa |
-| **v2.0.1** | 70 | 18-nov-2026 | | 100 % | Correcciones menores detectadas en la revisión cruzada, si se requieren. | Sustentación / Entrega 2 |
+| **v2.1.0** | 76 | 24-nov-2026 | 24-nov-2026 | 100 % | Ajustes al derrotero de la Entrega 2: limpieza de datos al leer, días transcurridos al solucionar y gráficas con matplotlib. | Sustentación / Entrega 2 (26-nov) |
 
 ![Avance acumulado por versión](../images/avance_versiones.png)
 
@@ -77,6 +77,11 @@ El **avance acumulado** es el porcentaje de los 141 días-actividad del cronogra
 - `reportes.py`: promedio de días de respuesta, las seis estadísticas adicionales del enunciado (incluido el perfil del solicitante derivado y la carga operativa) y exportación TXT y CSV, calculadas con Pandas (DataFrame y Series) y NumPy.
 - Plan de versionado, documentación del algoritmo y manual de usuario.
 
-### v2.0.1 — Sustentación (día 70, 18 de noviembre)
+### v2.1.0 — Ajustes para la sustentación (día 76, 24 de noviembre)
 
-Reservada para correcciones menores detectadas en la revisión cruzada del código. Si no se detectan errores, la versión final sigue siendo la 2.0.0.
+Reemplaza la versión de parche 2.0.1 que estaba reservada: el derrotero de la Entrega 2 pidió funcionalidades nuevas, así que el cambio es MENOR.
+
+- `limpieza.py`: limpieza de cada PQRS al leer los archivos (espacios, mayúsculas/minúsculas, catálogos, campos vacíos y fechas), con informe en la opción 4 → 5.
+- `archivos.py`: el consecutivo se calcula sobre todas las líneas del archivo, incluso las que la limpieza omite.
+- `cambios.py`: al pasar a Solucionada muestra la fecha de respuesta, los días transcurridos y el cumplimiento del plazo.
+- `graficas.py`: siete gráficas con matplotlib (opción 4 → 4) y cuaderno de Colab que las muestra.

@@ -10,6 +10,8 @@ sin saltos ni retrocesos. Cada cambio:
     2. actualiza la línea de la PQRS en su archivo plano,
     3. queda registrado en data/Historial.txt (fecha, usuario y observación),
     4. genera un comprobante en data/radicados/.
+Al pasar a Solucionada, además muestra la fecha de respuesta, los días
+transcurridos desde la radicación y si se respondió dentro del plazo.
 """
 
 from datetime import datetime
@@ -30,6 +32,18 @@ def pedir_observacion():
         if es_valido:
             return texto
         print(f"    [!] {mensaje}")
+
+
+def resumen_respuesta(registro, fecha_respuesta):
+    """
+    Días transcurridos entre la radicación y la respuesta, y cumplimiento del plazo.
+    Devuelve una tupla (dias_transcurridos, plazo_en_dias, dentro_del_plazo).
+    """
+    radicacion = datetime.strptime(registro["fecha_radicacion"], config.FORMATO_FECHA)
+    maxima = datetime.strptime(registro["fecha_maxima_respuesta"], config.FORMATO_FECHA)
+    dias = (fecha_respuesta - radicacion).days
+    plazo = (maxima - radicacion).days
+    return dias, plazo, fecha_respuesta <= maxima
 
 
 def registrar_cambio(sesion):
@@ -70,6 +84,7 @@ def registrar_cambio(sesion):
         interfaz.pausar()
         return
 
+    ahora = datetime.now().replace(microsecond=0)
     registro["estado_peticion"] = estado_nuevo
     archivos.actualizar_registro(registro)
     archivos.registrar_historial({
@@ -77,7 +92,7 @@ def registrar_cambio(sesion):
         "id": registro["id"],
         "estado_anterior": estado_actual,
         "estado_nuevo": estado_nuevo,
-        "fecha_cambio": datetime.now().strftime(config.FORMATO_FECHA),
+        "fecha_cambio": ahora.strftime(config.FORMATO_FECHA),
         "usuario": sesion["usuario"],
         "observacion": observacion,
     })
@@ -87,4 +102,14 @@ def registrar_cambio(sesion):
     ruta = archivos.guardar_radicado(texto, nombre_archivo)
     print(f"\n  [OK] {numero} pasó de '{estado_actual}' a '{estado_nuevo}'.")
     print(f"  [OK] Cambio registrado en {config.ARCHIVO_HISTORIAL.name} y comprobante en: {ruta}")
+
+    if estado_nuevo == "Solucionada":
+        dias, plazo, a_tiempo = resumen_respuesta(registro, ahora)
+        print(f"\n  Fecha de respuesta ....: {ahora.strftime(config.FORMATO_FECHA)}")
+        print(f"  Radicada el ...........: {registro['fecha_radicacion']}")
+        print(f"  Días transcurridos ....: {dias} días (plazo otorgado: {plazo} días)")
+        if a_tiempo:
+            print("  [OK] Respondida dentro del plazo.")
+        else:
+            print(f"  [!] Respondida fuera del plazo: {dias - plazo} días de retraso.")
     interfaz.pausar()

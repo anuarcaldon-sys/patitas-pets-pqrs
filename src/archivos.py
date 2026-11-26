@@ -14,9 +14,12 @@ Reglas que cumple este módulo:
   ya existe en ESE archivo + 1. Así los registros nuevos continúan la
   numeración de las bases de datos entregadas (3000 -> 3001) y nunca se
   repite un número.
+- Al leer, cada PQRS pasa por limpieza.limpiar_registro (espacios,
+  mayúsculas, campos vacíos y fechas) antes de usarse en el programa.
 """
 
 import config
+import limpieza
 
 
 def ruta_archivo(tipo):
@@ -62,8 +65,12 @@ def preparar_base_de_datos():
     return avisos
 
 
-def leer_archivo_plano(ruta):
-    """Lee cualquier archivo plano con encabezado y devuelve una lista de diccionarios."""
+def leer_archivo_plano(ruta, informe=None):
+    """
+    Lee cualquier archivo plano con encabezado y devuelve una lista de diccionarios.
+    Las líneas en blanco se ignoran; las que no tienen el número de campos del
+    encabezado se omiten con un aviso (y se cuentan en el informe de limpieza).
+    """
     registros = []
     with open(ruta, encoding="utf-8") as archivo:
         encabezado = archivo.readline().strip().split(config.SEPARADOR)
@@ -75,28 +82,74 @@ def leer_archivo_plano(ruta):
             if len(valores) != len(encabezado):
                 print(f"  [Aviso] {ruta.name}, línea {numero_linea}: "
                       f"tiene {len(valores)} campos y se esperaban {len(encabezado)}. Se omite.")
+                if informe is not None:
+                    informe[limpieza.OMITIDO_CAMPOS] += 1
                 continue
             registros.append(dict(zip(encabezado, valores)))
     return registros
 
 
-def leer_registros(tipo):
-    """Lee todas las PQRS de un tipo."""
-    return leer_archivo_plano(ruta_archivo(tipo))
+def leer_registros(tipo, informe=None):
+    """
+    Lee todas las PQRS de un tipo y las limpia con limpieza.limpiar_registro.
+    Los registros que no se pueden limpiar se omiten con un aviso.
+    """
+    ruta = ruta_archivo(tipo)
+    informe = informe if informe is not None else limpieza.informe_vacio()
+    limpios = []
+    for registro in leer_archivo_plano(ruta, informe):
+        limpio, motivo = limpieza.limpiar_registro(registro, informe)
+        if motivo:
+            print(f"  [Aviso] {ruta.name}, id {limpio.get('id', '?')}: {motivo}. Se omite.")
+            continue
+        limpios.append(limpio)
+    return limpios
 
 
-def leer_todas():
-    """Lee los cuatro archivos y devuelve una sola lista con todas las PQRS."""
+def leer_todas(informe=None):
+    """
+    Une los cuatro archivos (Peticion, Queja, Reclamo y Sugerencia) en una sola
+    lista de PQRS limpias. Si se pasa un informe, acumula en él las correcciones.
+    """
     todas = []
     for tipo in config.TIPOS_SOLICITUD:
-        todas.extend(leer_registros(tipo))
+        todas.extend(leer_registros(tipo, informe))
     return todas
 
 
+def informe_limpieza():
+    """
+    Lee y limpia los cuatro archivos y devuelve una tupla
+    (informe_de_correcciones, total_de_lineas_leidas, registros_validos_por_tipo).
+    """
+    informe = limpieza.informe_vacio()
+    validos = {}
+    for tipo in config.TIPOS_SOLICITUD:
+        validos[tipo] = len(leer_registros(tipo, informe))
+    total_lineas = sum(validos.values()) + informe[limpieza.OMITIDO_VACIO] + \
+        informe[limpieza.OMITIDO_FECHA] + informe[limpieza.OMITIDO_CAMPOS]
+    return informe, total_lineas, validos
+
+
+def ids_en_archivo(ruta):
+    """Todos los id numéricos de un archivo, leídos de la primera columna de cada línea."""
+    ids = []
+    with open(ruta, encoding="utf-8") as archivo:
+        next(archivo, None)                               # salta el encabezado
+        for linea in archivo:
+            primer_campo = linea.split(config.SEPARADOR, 1)[0].strip()
+            if primer_campo.isdigit():
+                ids.append(int(primer_campo))
+    return ids
+
+
 def siguiente_id(tipo):
-    """Consecutivo propio de cada archivo: mayor id existente + 1 (1 si está vacío)."""
-    ids = [int(r["id"]) for r in leer_registros(tipo) if r["id"].isdigit()]
-    return max(ids, default=0) + 1
+    """
+    Consecutivo propio de cada archivo: mayor id existente + 1 (1 si está vacío).
+    Se calcula sobre TODAS las líneas del archivo, incluso las que la limpieza
+    omite, para que un número nunca se repita ni se sobrescriba.
+    """
+    return max(ids_en_archivo(ruta_archivo(tipo)), default=0) + 1
 
 
 def agregar_linea(ruta, linea):
@@ -143,7 +196,7 @@ def actualizar_registro(registro):
     nueva_linea = config.SEPARADOR.join(registro[campo] for campo in config.CAMPOS)
     encontrado = False
     for posicion in range(1, len(lineas)):          # la línea 0 es el encabezado
-        if lineas[posicion].split(config.SEPARADOR)[0] == registro["id"]:
+        if lineas[posicion].split(config.SEPARADOR)[0].strip() == registro["id"]:
             lineas[posicion] = nueva_linea
             encontrado = True
             break
